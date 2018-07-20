@@ -1,19 +1,14 @@
 
-var value = 255;
 
 var yPos = 82;
 var xPos = 82;
-
-var runButton = document.getElementById("Run");
-var resetButton = document.getElementById("Reset");
-
-var sliderFriction;
+var i=0;
 
 function setup() {
 	createCanvas(windowWidth, windowHeight);
-  frameRate(80);
+  
 
-	sliderFriction = createSlider(1, 100, 50);
+	sliderFriction = createSlider(1, 100, 1);
 	sliderFriction.position(750, 170);
 
 
@@ -33,44 +28,31 @@ function setup() {
 	txt2 = createDiv('Mass');
 	txt2.position(670, 262);
 
+
 	//Run the simulation
- 	var button = createButton("Run");
- 	//button.mousePressed(runSketch);
+ 	var button1 = createButton("Play");
+ 	button1.mousePressed(function() {
+    timer = setInterval(playSketch, 50);
+	});
 
- 	//Reset the simulation
-   var button = createButton("Reset");
- 	//button.mousePressed(resetSketch);
 
+
+ //Pause the sim
+	var button2 = createButton("Pause");
+	button2.mousePressed(function() {
+		clearInterval(timer);
+	});
+
+
+ //Reset the simulation
+  var button3 = createButton("Reset");
+ 	button3.mousePressed(function() {
+		xPos = 82;
+		yPos = 82;
+    clearInterval(timer);
+	});
 
 }
-/*
-function runSketch() {
-			//Point Mass
-			fill(0, 110, 175);
-			background(255);
-			yPos = yPos + 1;
-	    xPos = xPos + 1;
-	    if (yPos > 320) {
-	       noFill();
-	       noStroke();
-		     yPos = 320;
-
-	      }
-
-	    if (xPos > 300) {
-	      noFill();
-	      noStroke();
-	      xPos = 300;
-	      }
-
-	   ellipse(xPos , yPos, 30, 30);
-	}
-}
-
-function resetSketch() {
-	xPos = 50;
-	yPos = 50;
-}*/
 
 function draw() {
 	//Point mass
@@ -78,7 +60,14 @@ function draw() {
 	background(255);
 	strokeWeight(2);
 	stroke(0);
-	ellipse(xPos, yPos, 30, 30);
+	ellipse(82, 82, 30, 30);
+
+	noFill();
+  ellipse(xPos, yPos, 30, 30);
+
+	line(xPos-15+i, yPos-i, xPos+15-i, yPos+i);
+
+
 	// Ramp
 	noFill();
  	triangle(30, 320, 30, 50, 300, 320);
@@ -88,18 +77,48 @@ function draw() {
 
 	//forces
 	strokeWeight(3);
-	stroke(255, 0, 0);
-	line(150, 30+(sliderMass.value()/5), 70, 90); //Reaction
+	stroke(255, 0, 0)
+	line(150+(sliderMass.value()/5), 30-(sliderMass.value()/5), 70, 90); //Reaction
+	strokeWeight(2);
+  txt3 = createDiv('Normal Force');
+	txt3.position(175, 150);
+	txt3.style('font-size', '16px');
+	txt3.style('color', '#ff0000');
 
+  stroke(0, 255, 0);
 	line(80, 80, 80, 150+(sliderMass.value()/5)); //Weight
+	txt4 = createDiv('Weight');
+	txt4.position(90, 300);
+	txt4. style('font-size', '16px');
+	txt4.style('color', '#00ff00');
 
+	stroke(0, 0, 255);
 	line(70, 90, 40-(sliderFriction.value()/5), 60-(sliderFriction.value()/5)); // Friction
-
-
-	text = createDiv('Reaction Force');
-	text.position(160, 120);
-
-	//resetSketch();
-	//runSketch();
+  txt5 = createDiv('Friction');
+	txt5.position(30, 150);
+	txt5.style('color', '#0000ff');
 
 }
+
+
+function playSketch() {
+
+		xPos=xPos+1;
+		yPos=yPos+1;
+
+		if(sliderFriction.value()>1){
+			i=i+1;
+			if(i>=16){
+				i=0;
+				i=i+1;
+		}
+	}else {
+		i=0;
+	}
+
+		draw();
+	  if (xPos >= 300 || yPos >= 300){
+			xPos=300;
+			yPos=300;
+		}
+	}
