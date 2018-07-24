@@ -3,6 +3,7 @@ var xPos = 82;
 var angle = 0;
 var isRunning;
 var isPressed;
+var txt1, txt2, txt3, txt4, txt5;
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
@@ -48,24 +49,30 @@ function setup() {
     yPos = 82;
   });
 
-	var button4 = createButton("Show Forces");
-	button4.position(850, 300);
-	button4.mousePressed(function() {
-     isPressed=true;
-	});
+  var button4 = createButton("Show Forces");
+  button4.position(750, 300);
+  button4.mousePressed(function() {
+    isPressed = true;
+  });
+
+  var button5 = createButton("Hide Forces");
+  button5.position(950, 300);
+  button5.mousePressed(function() {
+    isPressed = false;
+  });
 
 
-	var button5 = createButton("Resolve Forces in y and x");
-  button5.position(650, 350);
-	button5.mousePressed(function() {
+  var button6 = createButton("Resolve Forces in y and x");
+  button6.position(650, 350);
+  button6.mousePressed(function() {
 
-	});
+  });
 
-	var button6 = createButton("Resolve Forces in Plane");
-  button6.position(950, 350);
-	button6.mousePressed(function() {
+  var button7 = createButton("Resolve Forces in Plane");
+  button7.position(950, 350);
+  button7.mousePressed(function() {
 
-	});
+  });
   angleMode(DEGREES);
 
 }
@@ -86,53 +93,53 @@ function draw() {
   arc(300, 320, 70, 70, PI, PI + QUARTER_PI);
 
   //Unresolved forces
-	if(isPressed){
-		strokeWeight(3);
-	  stroke(255, 0, 0)
-	  line(150 + (sliderMass.value() / 5), 30 - (sliderMass.value() / 5), 70, 90); //Reaction
-	  strokeWeight(2);
-	  txt3 = createDiv('Normal Force');
-	  txt3.position(175, 150);
-	  txt3.style('font-size', '16px');
-	  txt3.style('color', '#ff0000');
+  if (isPressed) {
+    stroke(255, 0, 0)
+    line(150 + (sliderMass.value() / 5), 30 - (sliderMass.value() / 5), 70, 90); //Reaction
+    txt3 = createDiv('Normal Force');
+    txt3.position(175, 150);
+    txt3.style('font-size', '16px');
+    txt3.style('color', '#ff0000');
 
-	  stroke(0, 255, 0);
-	  line(80, 80, 80, 150 + (sliderMass.value() / 5)); //Weight
-	  txt4 = createDiv('Weight');
-	  txt4.position(90, 300);
-	  txt4.style('font-size', '16px');
-	  txt4.style('color', '#00ff00');
+    stroke(0, 255, 0);
+    line(80, 80, 80, 150 + (sliderMass.value() / 5)); //Weight
+    txt4 = createDiv('Weight');
+    txt4.position(80, 325);
+    txt4.style('font-size', '16px');
+    txt4.style('color', '#00ff00');
 
-	  stroke(0, 0, 255);
-	  line(70, 90, 40 - (sliderFriction.value() / 5), 60 - (sliderFriction.value() / 5)); // Friction
-	  txt5 = createDiv('Friction');
-	  txt5.position(30, 150);
-	  txt5.style('color', '#0000ff');
-	} else {
-
-	}
+    stroke(0, 0, 255);
+    line(70, 90, 40 - (sliderFriction.value() / 5), 60 - (sliderFriction.value() / 5)); // Friction
+    txt5 = createDiv('Friction');
+    txt5.position(30, 150);
+    txt5.style('color', '#0000ff');
+  }
 
 
   //Ball rolling
   if (sliderFriction.value() > 1) {
-    push();
-    translate(xPos, yPos);
-    rotate(angle);
-    ellipseMode(CENTER);
-    rectMode(CENTER);
-    stroke(0);
-    ellipse(0, 0, 30, 30);
-		fill(0, 110, 175);
-    rect(0, 0, 5, 30);
-    angle++;
-    pop();
-
     if (isRunning) {
+      push();
+      translate(xPos, yPos);
+      rotate(angle);
+      ellipseMode(CENTER);
+      rectMode(CENTER);
+      stroke(0);
+      ellipse(0, 0, 30, 30);
+      fill(0, 110, 175);
+      rect(0, 0, 5, 30);
+      angle++;
+      pop();
       xPos = xPos + 1;
       yPos = yPos + 1;
     } else {
       xPos = xPos;
       yPos = yPos;
+      stroke(0);
+      ellipse(xPos, yPos, 30, 30);
+      rectMode(CENTER);
+      fill(0, 110, 175);
+      rect(xPos, yPos, 5, 30);
     }
     if (xPos >= 300 || yPos >= 300) {
       xPos = 300;
@@ -140,7 +147,7 @@ function draw() {
     }
   } else {
     //Ball sliding
-		stroke(0);
+    stroke(0);
     ellipse(xPos, yPos, 30, 30);
     if (isRunning) {
       xPos = xPos + 1;
