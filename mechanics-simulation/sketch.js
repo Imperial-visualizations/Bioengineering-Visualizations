@@ -189,9 +189,9 @@ function draw() {
       angle = angle + 10;
       pop();
 
-      //The ball moves down the slope, moves faster with increased mass and slower with friction
-      xPos = xPos + (sliderMass.value() / 10) - (sliderFrictionD.value() / 50);
-      yPos = yPos + (sliderMass.value() / 10) - (sliderFrictionD.value() / 50);
+      //The ball moves down the slope, moves slower with friction
+      xPos = xPos + 1 - (sliderFrictionD.value() / 50);
+      yPos = yPos + 1 - (sliderFrictionD.value() / 50);
     } else {
       //Ball stops at its current position
       xPos = xPos;
@@ -216,9 +216,9 @@ function draw() {
     fill(0, 110, 175);
     rect(xPos + (sliderMass.value() / 2.7), yPos - (sliderMass.value() / 2.7), 5, 30 + sliderMass.value());
     if (isRunning) {
-      //Ball travels slower with friction and faster with increased mass
-      xPos = xPos + (sliderMass.value() / 10) - (sliderFrictionD.value() / 50);
-      yPos = yPos + (sliderMass.value() / 10) - (sliderFrictionD.value() / 50);
+      //Ball travels slower with friction
+      xPos = xPos + 2 - (sliderFrictionD.value() / 50);
+      yPos = yPos + 2 - (sliderFrictionD.value() / 50);
     } else {
       xPos = xPos;
       yPos = yPos;
