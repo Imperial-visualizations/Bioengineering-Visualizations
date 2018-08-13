@@ -1,7 +1,7 @@
 let currentContainer=[], arrows=[];
 let  vectorB, theta=-3.14/2, dTheta=0.01;
-let fieldDisplay=false, playing=false;
-let buttonPlay, buttonPause, buttonField, buttonReset;
+let fieldDisplay=false, playing=false, mouseWasPressed=false;
+let buttonPlay, buttonPause, buttonField, buttonReset, currentSlider, tagCurrentSlider;
 
 
 
@@ -16,25 +16,27 @@ function setup(){
 
 
     //creating buttons for interraction
-    buttonField =createButton("Display B fields");
-    buttonField.position(window.innerWidth/3+$('#sketch-holder').width()/4, 100);
-    buttonField.mousePressed(function(){
-        fieldDisplay= !fieldDisplay;
-    });
-
     buttonPlay = createButton("Play");
     buttonPlay.position(window.innerWidth/3+$('#sketch-holder').width()/8, 100);
     buttonPlay.mousePressed(function(){
         playing = !playing;
-    })
+    });
+
+    buttonField =createButton("Display Magnetic fields");
+    buttonField.position(buttonPlay.x+buttonPlay.width+10, 100);
+    buttonField.mousePressed(function(){
+        fieldDisplay= !fieldDisplay;
+    });
+
 
     buttonReset= createButton("Reset");
-    buttonReset.position(window.innerWidth/3+$('#sketch-holder').width()/2, 100);
+    buttonReset.position(buttonField.x+buttonField.width+10, 100);
     buttonReset.mousePressed(function(){
-        fieldDisplay=false;
         playing=false;
         for (let i=0; i<currentContainer.length; i++){
             currentContainer[i].value=Math.floor(random(100))/10;
+            currentContainer[i].x=circuit.x;
+            currentContainer[i].y=circuit.y;
         }
         theta=-PI/2;
         vectorB.x=circuit.x;
@@ -44,7 +46,20 @@ function setup(){
         vectorB.update();
     });
 
+    currentSlider = createSlider(0, 10, 10, 0.1);
+    currentSlider.position(buttonReset.x+buttonReset.width+10, 100);
+    currentSlider.style('width', '200px');
+    //text for slider
+
+    /*
+    tagCurrentSlider= createElement('p', 'Current I');
+    tagCurrentSlider= (currentSlider.x+10, currentSlider.y-20);
+    */
+
+
 }
+
+
 
 
 var circuit = {
@@ -55,7 +70,7 @@ var circuit = {
 
     drawCircuit() {
         stroke(100);
-        strokeWeight(3);
+        strokeWeight(2);
         noFill();
         translate(this.x, this.y);
         ellipse(0, 0, this.diam, this.diam);
@@ -73,7 +88,7 @@ const Wire= class {
         this.y=y;
         this.value=A;
         this.widthInner=3;
-        this.widthOuter=10;
+        this.widthOuter=12;
         this.limitLeft = x-this.widthOuter;
         this.limitRight = x+this.widthOuter;
         this.limitUp = y-this.widthOuter;
@@ -82,7 +97,10 @@ const Wire= class {
 
     drawWire() { //we could include before call another condition if to know which wire to move
         //case to move the mouse
-        if (mouseIsPressed /* && mouseX>= this.limitLeft && mouseX<=this.limitRight && mouseY>=this.limitUp && mouseY<=this.limitDown*/){
+        if (mouseIsPressed && (mouseX>= this.limitLeft-30 && mouseX<=this.limitRight+30 && mouseY>=this.limitUp-30 && mouseY<=this.limitDown+30))
+        {mouseWasPressed= true}
+
+        if (mouseIsPressed && mouseWasPressed){
         this.x = mouseX;
         this.y = mouseY;
         //changing the definitions of the limits
@@ -90,14 +108,19 @@ const Wire= class {
         this.limitRight = this.x+this.widthOuter;
         this.limitUp = this.y-this.widthOuter;
         this.limitDown = this.y+this.widthOuter;
-            }
+            } else if (!mouseIsPressed && mouseWasPressed){mouseWasPressed=false}
 
         stroke(0);
         fill(255);
         ellipse(this.x, this.y, this.widthOuter, this.widthOuter);
         fill(0);
-        strokeWeight(3);
-        ellipse(this.x, this.y, this.widthInner, this.widthInner);
+        strokeWeight(1);
+        //change for cross
+        line(this.x-this.widthInner, this.y-this.widthInner, this.x+this.widthInner, this.y+this.widthInner);
+        line(this.x+this.widthInner, this.y-this.widthInner, this.x-this.widthInner, this.y+this.widthInner);
+
+        //for going out of the page
+        //strokeWeight(3);ellipse(this.x, this.y, this.widthInner, this.widthInner);
 
         strokeWeight(1);
         textSize(15);
@@ -113,6 +136,7 @@ const Wire= class {
                 fill(255, 255, 255, 0);
                 //draw small arrow to indicate direction
                 ellipse(this.x, this.y, r, r);
+                //draw arrows to show direction of magnetic fields
                 line(this.x+r, this.y, this.x+r-4, this.y-4);
                 line(this.x+r, this.y, this.x+r+4, this.y-4);
                 line(this.x-r, this.y, this.x-r-4, this.y+4);
@@ -139,10 +163,14 @@ let  Arrow = class {
         this.y =circuit.y +circuit.diam/2*sin(theta);
 
         //recursion of the angle
-        if (theta<=2*PI) {
+        if (theta<=PI) {
         theta+=dTheta;
         } else {
-        theta=0;
+        theta=-PI;
+        }
+        if (theta===-PI/2-dTheta){
+            playing=false;
+            theta+=dTheta;
         }
     }
 
@@ -211,7 +239,10 @@ function draw(){
     }
 
 
-    if (playing) { vectorB.updatePosition(); } //we update the position of the arrow on the circuit
     vectorB.update();
+    if (playing) { vectorB.updatePosition(); } //we update the position of the arrow on the circuit
+
+
+
 
 }
