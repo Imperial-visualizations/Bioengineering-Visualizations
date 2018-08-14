@@ -8,7 +8,7 @@ let buttonPlay, buttonPause, buttonField, buttonReset, currentSlider,textCurrent
 
 let trace={}, frames = [];
 let x=[], y=[], r=[];
-let B, Btot;
+let B, Bdl=0, Btot, intBdl=0;
 
 
 
@@ -61,6 +61,7 @@ function setup(){
 
     buttonReset= createButton("Reset");
     buttonReset.position(currentSlider.x, currentSlider.y+currentSlider.height+10);
+    //what happens when we reset animation
     buttonReset.mousePressed(function(){
         playing=false;
         theta=-PI/2;
@@ -284,9 +285,12 @@ function draw(){
     //when we are in pause: we recalculate the plot for plotly
     else{
         //plotly parameters:
+        let intBdl2=intBdl;
         args_plot_Bdl(circuit, currentContainer);
-
-        Plotly.newPlot('graph-holder', [trace], layout, {displayModeBar:false});
+        if (intBdl2!==intBdl) {
+            $('#Bdl-text').html(`${(intBdl/mu0).toString().slice(0, 5)}*&mu;<sub>0<\sub>`); //print the value of Bdl on the page
+            Plotly.newPlot('graph-holder', [trace], layout, {displayModeBar: false});
+        }
 
     }
 
@@ -324,7 +328,7 @@ function calculateB(wires, x, y){
 /*calculate B.dl at an angle of rotation alpha (equivalent to method using [posX, posY] */
 function calculateBdl(loop, B, alpha){
     let dlLength = loop.diam/2*dTheta;
-    let dl = [loop.diam/2*Math.cos(alpha), loop.diam/2*Math.sin(alpha)];
+    let dl = [Math.cos(alpha), Math.sin(alpha)];
     const dl2=dl; //create a copy of dl
     //rotate by  PI/2 to the right
     dl[0]= -dl2[1];
@@ -349,8 +353,8 @@ function args_plot_Bdl(loop, wires){
     x=[];
     y=[];
     trace={};
-    let Bdl=0;
-    let intBdl=0;
+    intBdl=0;
+
     let Bdl2=0;
 
     for (let i=-Math.PI/2; i<= 3*Math.PI/2; i+=dTheta) {
@@ -365,11 +369,10 @@ function args_plot_Bdl(loop, wires){
         y.push(Bdl);
 
         intBdl+=(Bdl+Bdl2)/2*dTheta;
-        //testing
-        //y.push (Btot);
-        //when centered: Btot is about constant
     }
-    console.log(intBdl/mu0);
+
+
+
     trace = {
         x:x,
         y:y,
