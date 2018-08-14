@@ -1,8 +1,14 @@
-let currentContainer=[], arrows=[];
-let myCanvas;
-let vectorB, theta=-3.14/2, dTheta=0.01;
+let currentContainer=[], arrows=[],myCanvas;
+let vectorB, theta=-Math.PI/2;
+const dTheta=0.01, mu0= 4*Math.PI*Math.pow(10, -7); //without the 10^-7 term
 let fieldDisplay=false, playing=false, mouseWasPressed=false, canModifySettings=true;
-let buttonPlay, buttonPause, buttonField, buttonReset, currentSlider, tagCurrentSlider, tagCurrentSliderMin, tagCurrentSliderMax;
+let buttonPlay, buttonPause, buttonField, buttonReset, currentSlider,textCurrentSlider, tagCurrentSlider, tagCurrentSliderMin, tagCurrentSliderMax, diameterSlider, tagDiamSlider;
+
+/* Now the plotly part */
+
+let trace={}, frames = [];
+let x=[], y=[], r=[];
+let B, Btot;
 
 
 
@@ -18,8 +24,7 @@ function setup(){
 
     //creating buttons for interraction
     buttonPlay = createButton("Play");
-    let positionFirst = $("#myTitle").position().top + $('#myTitle').height()+10;
-    buttonPlay.position(100, positionFirst);
+    buttonPlay.position(100, 100);
     buttonPlay.mousePressed(function(){
         playing = true;
     });
@@ -38,13 +43,13 @@ function setup(){
 
 
     //text for slider (telling them that it won't change if the animation is playing)
-    textCurrentSlider = createElement('p', "(Current will only change if animation is at its start position)");
+    textCurrentSlider = createElement('p', "(Value of current and position of wire <br>only changes if animation is on its start position)");
     textCurrentSlider.position(buttonPlay.x-20, buttonField.y+buttonField.height+20);
     textCurrentSlider.style('font-size', '13px');
 
-    tagCurrentSlider = createElement('p', "Current <b>I</b>");
+    tagCurrentSlider = createElement('p', "Current <b>I</b>:");
     tagCurrentSlider.position(buttonPlay.x-70, textCurrentSlider.y+textCurrentSlider.height);
-    //slider
+    //slider for changing current
     currentSlider = createSlider(-10, 10, 5, 0.1);
     currentSlider.position(buttonPlay.x, textCurrentSlider.y+textCurrentSlider.height+5);
     currentSlider.style('width', '200px');
@@ -70,22 +75,27 @@ function setup(){
         vectorB.updatePosition();
         vectorB.update();
     });
+    //slider for changing diameter of circuit
+    tagDiamSlider= createElement('p', "Diameter of loop:");
+    tagDiamSlider.position(buttonReset.x-70, buttonReset.y+buttonReset.height+10);
 
+    diameterSlider = createSlider(1, 400, 150, 5);
+    diameterSlider.position(currentSlider.x, tagDiamSlider.y+tagDiamSlider.height);
+    diameterSlider.style('width', '200px');
 
 
 
 }
 
 
-
-
-var circuit = {
+let circuit = {
     diam:200,
     x:$('#sketch-holder').width()/2,
     y: $('#sketch-holder').height()/2,
 
 
     drawCircuit() {
+        this.diam = diameterSlider.value();
         stroke(100);
         strokeWeight(2);
         noFill();
@@ -108,27 +118,20 @@ const Wire= class {
         else{this.valueSign=-1}
         this.widthInner=3;
         this.widthOuter=12;
-        this.limitLeft = x-this.widthOuter;
-        this.limitRight = x+this.widthOuter;
-        this.limitUp = y-this.widthOuter;
-        this.limitDown = y+this.widthOuter;
+
     }
 
     updateWirePos() {
-        if (mouseIsPressed && (mouseX>= this.limitLeft-30 && mouseX<=this.limitRight+30 && mouseY>=this.limitUp-30 && mouseY<=this.limitDown+30))
+        let distance =  dist(mouseX, mouseY, this.x, this.y);
+        if (mouseIsPressed && distance<=this.widthOuter+10)
         {mouseWasPressed= true}
-
         if (mouseIsPressed && mouseWasPressed){
             this.x = mouseX;
             this.y = mouseY;
-            //changing the definitions of the limits
-            this.limitLeft = this.x-this.widthOuter;
-            this.limitRight = this.x+this.widthOuter;
-            this.limitUp = this.y-this.widthOuter;
-            this.limitDown = this.y+this.widthOuter;
             }
         else if (!mouseIsPressed && mouseWasPressed){mouseWasPressed=false}
     }
+
     drawWire() {
         //case to move the mouse
 
@@ -179,15 +182,14 @@ let  Arrow = class {
         this.y = y;
         this.length = 0;
         this.scaling = 1000;
-        this.endpoint=[];
         this.r=[];
     }
 
     //method
     updatePosition() {
-        this.x = circuit.x +circuit.diam/2*cos(theta);
-        this.y =circuit.y +circuit.diam/2*sin(theta);
 
+    }
+    updateAngle(){
         //recursion of the angle
         if (theta<=PI) {
         theta+=dTheta;
@@ -201,12 +203,16 @@ let  Arrow = class {
     }
 
     update () { //update will redraw each arrow
-        //update the angle
+        //update the position as we change the angle or the diameter
+        this.x = circuit.x + circuit.diam / 2 * cos(theta);
+        this.y = circuit.y + circuit.diam / 2 * sin(theta);
+
+        //update the angle for the arrow
         this.r=[this.x - currentContainer[0].x, this.y - currentContainer[0].y];
         this.length= currentContainer[0].value*currentContainer[0].valueSign/vectorLength(this.r)*this.scaling;
 
         //draw the arrow
-        var angle = (atan2(this.r[1], this.r[0]) +PI/2); //orientate geometry to the position of the cursor (draw arrows pointing to cursor)
+        let angle = (atan2(this.r[1], this.r[0]) +PI/2); //orientate geometry to the position of the cursor (draw arrows pointing to cursor)
         push(); //move the grid
         stroke(0);
         fill(40, 200, 40);
@@ -246,8 +252,8 @@ let  Arrow = class {
 }
 
 function vectorLength(vector) {
-    var modulus=0;
-    for (var i=0; i<vector.length; i++) {modulus+= Math.pow(vector[i],2); }
+    let modulus=0;
+    for (let i=0; i<vector.length; i++) {modulus+= Math.pow(vector[i],2); }
     return Math.sqrt(modulus);
 }
 
@@ -269,5 +275,126 @@ function draw(){
     }
 
     vectorB.update();
-    if (playing) {vectorB.updatePosition();} //we update the position of the arrow on the circuit
+    if (playing) {
+        vectorB.updateAngle(); //we update the position of the arrow on the circuit
+
+    }
+
+
+    //when we are in pause: we recalculate the plot for plotly
+    else{
+        //plotly parameters:
+        args_plot_Bdl(circuit, currentContainer);
+
+        Plotly.newPlot('graph-holder', [trace], layout, {displayModeBar:false});
+
+    }
+
 }
+
+//resize the canvas if the window size changes
+function windowResized() {
+    let width = $('#sketch-holder').width(), height = $('#sketch-holder').height();
+    resizeCanvas(width, height);
+}
+
+
+
+/* Now the plotly part */
+
+/*function to calculate the value of B at a point [x, y] */
+function calculateB(wires, x, y){
+    let Bx=0;
+    let By=0;
+
+    //if several wires: we add linearly their contributions
+    for (let j=0; j<wires.length; j++){
+        let distance = dist(x, y, wires[j].x, wires[j].y)
+        const BConst= mu0/2/Math.PI/Math.pow(distance, 2)*wires[j].value;
+
+        let r = [x-wires[j].x, y-wires[j].y];
+        //rotate and multiply by value
+        Bx+=-BConst*r[1];
+        By+= BConst*r[0];
+    }
+    //console.log([Bx, By]);
+    return [Bx, By];
+}
+
+/*calculate B.dl at an angle of rotation alpha (equivalent to method using [posX, posY] */
+function calculateBdl(loop, B, alpha){
+    let dlLength = loop.diam/2*dTheta;
+    let dl = [loop.diam/2*Math.cos(alpha), loop.diam/2*Math.sin(alpha)];
+    const dl2=dl; //create a copy of dl
+    //rotate by  PI/2 to the right
+    dl[0]= -dl2[1];
+    dl[1]= dl2[0];
+
+    //get right length
+    dl[0]=dl[0]*dlLength/*vectorLength(dl)*/;
+    dl[1]=dl[1]*dlLength/*vectorLength(dl)*/;
+    //console.log(dl);
+
+    let Bdl = B[0]*dl[0]+B[1]*dl[1];
+    return Bdl;
+    //testing
+    //dl is the problem
+    //return  dl[0];
+}
+
+
+//return plotly parameters for x and y:
+
+function args_plot_Bdl(loop, wires){
+    x=[];
+    y=[];
+    trace={};
+    let Bdl=0;
+    let intBdl=0;
+    let Bdl2=0;
+
+    for (let i=-Math.PI/2; i<= 3*Math.PI/2; i+=dTheta) {
+        Bdl2=Bdl;
+        let posX = loop.x + loop.diam/2 * Math.cos(i);
+        let posY = loop.y + loop.diam/2 * Math.sin(i);
+        B = calculateB(wires, posX, posY);
+
+        Btot = vectorLength(B); //not needed yet
+        Bdl = calculateBdl(loop, B, i);
+        x.push(i+Math.PI/2); // + PI/2 so that we can start at 0, but does not affect calculations
+        y.push(Bdl);
+
+        intBdl+=(Bdl+Bdl2)/2*dTheta;
+        //testing
+        //y.push (Btot);
+        //when centered: Btot is about constant
+    }
+    console.log(intBdl/mu0);
+    trace = {
+        x:x,
+        y:y,
+        type:'scatter'
+    };
+}
+
+args_plot_Bdl(circuit, currentContainer);
+
+let layout = {
+    title:'Plot of <b>B.dl</b>',
+    xaxis: {
+        title: 'theta',
+        range:[-0.2, 2*Math.PI+0.2],
+
+        autotick: false,
+        ticks: 'outside',
+        tick0: 0,
+        dtick: Math.PI/2,
+    },
+    yaxis: {
+        title:'B.dl'
+    }
+}
+
+Plotly.newPlot('graph-holder', [trace], layout, {displayModeBar:false});
+
+

@@ -5,18 +5,27 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Ampere's Law</title>
 
+    <!--p5-->
     <script src="libraries/p5.min.js"></script>
     <script src="libraries/addons/p5.dom.min.js"></script>
     <script src="libraries/addons/p5.sound.min.js"></script>
 
-    <script src="libraries/plotly-latest.min"></script>
-    <script type="text/javascript" async
-            src=src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async>
+    <!--Plotly-->
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <!--Mathjax-->
+   <script type="text/javascript" async
+            src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML">
     </script>
+    <!--jquery-->
     <script src="libraries/jquery.min.js"></script>
 
-    <link rel="icon" href="assets/favicon-196x196.png" type="image/x-icon">
 
+    <link rel="icon" href="logo.png" type="image/x-icon">
+
+    <link rel="stylesheet" href="https://rawgit.com/cydcowley/public-test-data/master/Style2.css">
+   <!--
+    <link rel="stylesheet" href="styles/navigator.css">
+-->
     <link rel="stylesheet" href="css/skeleton.css">
     <link rel="stylesheet" href="css/style.css">
 
@@ -24,14 +33,19 @@
 <body>
 <div class="rightnav">▶ </div>
 <div class="container">
-    <h1 id="myTitle">Ampere's Law</h1>
-        <div id="sketch-holder" style="position: absolute; right: 0vh; width: 65%; height: 80vh">
-        </div>
+
+    <div id="sketch-holder" style="position: absolute; right: 0vh; width: 65%; height: 60vh">
+    </div>
+    <div id="graph-holder" style="position:absolute; right:0vh; top:60vh; width:65%; height:40vh">
+    </div>
+
 
     <script src="AmpereLawv2.js"></script>
     <script>
-        let pages= ["1Ampere"];
+        let pages= ["1Ampere's-law.html"];
     </script>
+
+    <script src="https://rawgit.com/cydcowley/public-test-data/master/navigation.js"></script>
     <script src="css/navigator.js"></script>
 
 </body>
