@@ -20,7 +20,7 @@ function setup(){
     frameRate(60);
     //create the first current-carrying wire
     currentContainer.push(new Wire(circuit.x, circuit.y, 5,0));
-    theta=-PI/2;
+    theta=-Math.PI/2;
 
                             //creating buttons for interraction
     buttonPlay = createButton("Play");
@@ -117,7 +117,7 @@ function setup(){
     buttonAddWire.position(diameterSlider.x, diameterSlider.y+diameterSlider.height+20);
     buttonAddWire.mousePressed(function(){
         //only in start condition:
-        if (theta>=-PI/2&& theta<=-PI/2+dTheta) {
+        if (theta>=-Math.PI/2&& theta<=-Math.PI/2+dTheta) {
             addWire();
             buttonRemoveWires.show();
             if (currentContainer.length>=6){
@@ -144,7 +144,7 @@ function setup(){
     //what happens when we reset animation
     buttonReset.mousePressed(function(){
         playing=false;
-        theta=-PI/2;
+        theta=-Math.PI/2;
         currentContainer[0].x = circuit.x;
         currentContainer[0].y=circuit.y;
         for (let i=1; i<currentContainer.length; i++){
@@ -191,7 +191,7 @@ let circuit = {
         stroke(100, 40, 100);
         noFill();
         translate(this.x, this.y);
-        arc(0,0, this.diam, this.diam, 3*PI/2, theta);
+        arc(0,0, this.diam, this.diam, 3*Math.PI/2, theta);
         pop();
     }
 };
@@ -295,14 +295,14 @@ vectorB= {
 
 
     updateAngle(){ //recursion of the angle
-        if (theta<=PI) {
+        if (theta<=Math.PI) {
         theta+=dTheta;
         } else {
-        theta=-PI;
+        theta=-Math.PI;
         }
-        if (theta>=-PI/2-dTheta&&theta<-PI/2){
+        if (theta>=-Math.PI/2-dTheta&&theta<-Math.PI/2){
             playing=false;
-            theta=-PI/2;
+            theta=-Math.PI/2;
         }
     },
 
@@ -489,20 +489,23 @@ function initialPlot(){
 // function checkCurrentListChoices(){
 //         for (let i=0; i<6; i++){
 //             if (i<currentContainer.length){
-//                 currentSelectList[i].show();
+//                 $("#currentSelectList option[value=i.toString()]").show();
+//                 console.log('showing!');
 //             } else{
-//                 currentSelectList[i].hide();
+//                 $("#currentSelectList option[value=i.toString()]").hide();
+//                 console.log('hiding...');
 //             }
 //         }
-//
+//         console.log('hello...?');
 //     }
 
 function draw(){
+    // checkCurrentListChoices();
     background (255);
     circuit.drawCircuit();
     // checkCurrentListChoices();
     for (let i = 0; i < currentContainer.length; i++) {
-        if (theta>=-PI/2&& theta<=-PI/2+dTheta && !playing) {
+        if (theta>=-Math.PI/2&& theta<=-Math.PI/2+dTheta && !playing) {
             countingFrames=0;
             currentContainer[i].updateWirePos();
             currentContainer[wireSelected].value = currentSlider.value();
@@ -528,7 +531,7 @@ function draw(){
 
 
     //when we are in pause: we recalculate the plot for plotly
-    if (theta>=-PI/2&& theta<=-PI/2+dTheta){ //we are in the start position
+    if (theta>=-Math.PI/2&& theta<=-Math.PI/2+dTheta){ //we are in the start position
         circuit.diam= diameterSlider.value(); //update the diameter of the loop
         //plotly parameters:
         let intBdl2=intBdl;
