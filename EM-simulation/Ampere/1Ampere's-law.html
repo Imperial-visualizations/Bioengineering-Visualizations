@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Ampere's Law</title>
+
+    <!--p5-->
+    <script src="libraries/p5.min.js"></script>
+    <script src="libraries/addons/p5.dom.min.js"></script>
+    <script src="libraries/addons/p5.sound.min.js"></script>
+
+    <!--Plotly-->
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <!--Mathjax-->
+   <script type="text/javascript" async
+            src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML">
+    </script>
+    <script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+    <!--jquery-->
+    <script src="libraries/jquery.min.js"></script>
+
+
+    <link rel="icon" href="logo.png" type="image/x-icon">
+
+    <link rel="stylesheet" href="https://rawgit.com/cydcowley/public-test-data/master/Style2.css">
+   <!--
+    <link rel="stylesheet" href="styles/navigator.css">
+-->
+    <link rel="stylesheet" href="css/skeleton.css">
+    <link rel="stylesheet" href="css/style.css">
+
+
+
+</head>
+
+<body>
+<!--<div class="rightnav">▶ </div> -->
+<div class="container">
+    <div id ='buttons-holder' class="four columns" style="position:absolute; left:0">
+        <div id="button"></div>
+
+    </div>
+    <div id="sketch-holder" style="position: absolute; right: 0; width: 65%; height: 60vh"></div>
+    <div id="graph-holder" style="position:absolute; right:20vh; top:65vh; width:49%; height:37vh"></div>
+
+    <div  style="position:absolute; right:0; top:80vh; width:16%; height:30vh">
+
+      <p> $\displaystyle\oint\mathbf{B.dl}=$ <span id='Bdl-text'></span> </p>
+
+   </div>
+
+
+<!-- my own script-->
+        <script src="1Ampere's-law.js"></script>
+<!--what they asked us to add for navigation -->
+    <script>
+        let pages= ["1Ampere's-law.html"];
+    </script>
+
+    <script src="https://rawgit.com/cydcowley/public-test-data/master/navigation.js"></script>
+    <script src="css/navigator.js"></script>
+
+</body>
+</html>
