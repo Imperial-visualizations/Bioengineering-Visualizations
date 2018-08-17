@@ -1,15 +1,13 @@
 let currentContainer=[], arrows=[],myCanvas, countingFrames=0;
 let vectorB, theta=-Math.PI/2;
-const dTheta=0.01, mu0= 4*Math.PI*Math.pow(10, -7); //without the 10^-7 term
-let fieldDisplay=false, playing=false, mouseWasPressed=false;
+const dTheta=0.01, mu0= 4*Math.PI*Math.pow(10, -7);
+let fieldDisplay=false, playing=false, mouseWasPressed=false, wireSelected=0;
 let buttonPlay, buttonPause, buttonField, buttonReset, currentSlider,textCurrentSlider, tagCurrentSlider, tagCurrentSliderMin, tagCurrentSliderMax, diameterSlider, tagDiamSlider;
 
-/* Now the plotly part */
-
-let trace={x:[],y:[]}, frames = [], layout, trace2={x:[],y:[]};
+/* Now the plotly part of declaration */
+let trace={x:[],y:[]}, layout, trace2={x:[],y:[]};
 let x=[], y=[], r=[];
 let B, Bdl=0, Btot, intBdl=0;
-
 
 
 function setup(){
@@ -17,17 +15,16 @@ function setup(){
     myCanvas = createCanvas(width, height);
     myCanvas.parent('sketch-holder');
     frameRate(60);
-    currentContainer.push(new Wire(circuit.x, circuit.y, Math.floor(random(100))/10));
+    //create the first current-carrying wire
+    currentContainer.push(new Wire(circuit.x, circuit.y, 5,0));
     vectorB = new Arrow(circuit.x, circuit.y-circuit.diam/2);
     theta=-PI/2;
 
-
-    //creating buttons for interraction
+                                            //creating buttons for interraction
     buttonPlay = createButton("Play");
     buttonPlay.position(100, 100);
     buttonPlay.mousePressed(function(){
         playing = true;
-
     });
 
     buttonPause = createButton("Pause");
@@ -125,9 +122,8 @@ let circuit = {
     }
 }
 
-
 const Wire= class {
-    constructor(x, y, A){
+    constructor(x, y, A, index){
         this.x=x;
         this.y=y;
         this.value=A;
@@ -135,7 +131,7 @@ const Wire= class {
         else{this.valueSign=-1}
         this.widthInner=3;
         this.widthOuter=12;
-
+        this.index = index;
     }
 
     updateWirePos() {
@@ -150,7 +146,6 @@ const Wire= class {
     }
 
     drawWire() {
-
         stroke(0);
         fill(255);
         ellipse(this.x, this.y, this.widthOuter, this.widthOuter);
@@ -168,34 +163,30 @@ const Wire= class {
         }
         strokeWeight(1);
         textSize(15);
-        text("I=" + this.value, this.x+10, this.y+10);
+        text(`I= ${this.value}`, this.x+10, this.y+10);
         fill(255);
         }
 
     drawField() { //for now only works for 1 wire since we only have concentric circles
-
-
         if (fieldDisplay) {
             stroke(0, 150, 50);
             if (this.value!==0) {
                 let avoidBug='useless';
+                //here: have new ways of tracing the magnetic fields
+
+
+
                 //concentric circles
-
                 for (let r = circuit.diam / 3/ Math.abs(this.value); r <= $('#sketch-holder').width() || r <= $('#sketch-holder').width(); r += r) {
-
                     noFill();
                     //draw small arrow to indicate direction
-
                     ellipse(this.x, this.y, 2*r, 2*r);
                     //draw arrows to show direction of magnetic fields
                     line(this.x + r, this.y, this.x + r -  this.valueSign* 4, this.y - this.valueSign*4);
                     line(this.x + r, this.y, this.x + r + this.valueSign*4, this.y - this.valueSign*4);
                     line(this.x - r, this.y, this.x - r - this.valueSign*4, this.y + this.valueSign*4);
                     line(this.x - r, this.y, this.x - r + this.valueSign*4, this.y + this.valueSign*4);
-
                 }
-
-
             }
         }
     }
@@ -238,9 +229,9 @@ let  Arrow = class {
         let angle = (atan2(Bvect[1], Bvect[0] )); //orientate geometry to the position of the cursor (draw arrows pointing to cursor)
 
         push(); //move the grid
+        translate(this.x, this.y);
         stroke(0);
         fill(40, 200, 40);
-        translate(this.x, this.y);
         rotate(angle);
         beginShape(); //create a shape from vertices
         vertex(0, 0);
@@ -271,11 +262,14 @@ let  Arrow = class {
         fill(40, 200, 40);
         stroke(0);
         text("B", (3*this.length*cos(angle)+5), (3*this.length*sin(angle)+5));
-
         pop(); //reset the grid!
     }
 }
 
+function addWire(posX, posY){
+    let index = currentContainer.length;
+    currentContainer.push(new Wire(posX, posY, Math.floor(random(200))/10-10), index);
+}
 
 //tool to calculate the length of a vector as an array
 function vectorLength(vector) {
@@ -284,11 +278,6 @@ function vectorLength(vector) {
     return Math.sqrt(Math.pow(vector[0], 2)+Math.pow(vector[1], 2));
 }
 
-//resize the canvas if the window size changes
-function windowResized() {
-    let width = $('#sketch-holder').width(), height = $('#sketch-holder').height();
-    resizeCanvas(width, height);
-}
 
 
 
@@ -309,7 +298,6 @@ function calculateB(wires, x, y){
         Bx+=-BConst*r[1];
         By+= BConst*r[0];
     }
-
     return [Bx, By];
 }
 
@@ -318,31 +306,23 @@ function calculateBdl(loop, B, alpha){
     let dlLength = loop.diam/2*dTheta;
     let dl = [Math.cos(alpha), Math.sin(alpha)];
     const  dl2 = dl.slice(0); //create a copy of dl
-
     //rotate by  PI/2 to the right
     dl[0]= -dl2[1];
     dl[1]= dl2[0];
-
-
     //get right length
     dl[0]=dl[0]*dlLength;
     dl[1]=dl[1]*dlLength;
-
-
     let Bdl = B[0]*dl[0]+B[1]*dl[1];
     return Bdl;
 }
 
-
 //return plotly parameters for x and y:
-
 function args_plot_Bdl(loop, wires){
     x=[];
     y=[];
     trace={};
     trace2={};
     intBdl=0;
-    frames =[];
     let Bdl2=0;
 
     for (let i=-Math.PI/2; i<= 3*Math.PI/2; i+=dTheta) {
@@ -358,13 +338,7 @@ function args_plot_Bdl(loop, wires){
 
         intBdl+=(Bdl+Bdl2)/2;
     }
-
-    trace = {
-        x:x,
-        y:y,
-        name: 'B.dl',
-        type:'scatter'
-    };
+    trace = {x:x, y:y, name: 'B.dl', type:'scatter'};
     trace2= {
         x: [x[0]],
         y:[y[0]],
@@ -396,7 +370,6 @@ function args_plot_Bdl(loop, wires){
     else {
         minRange = maxRange = min;
     }
-
     layout.yaxis.range = [minRange, maxRange];
 }
 
@@ -421,15 +394,9 @@ function initialPlot(){
         },
         showlegend:false
     };
-
     args_plot_Bdl(circuit, currentContainer);
     Plotly.newPlot('graph-holder', [trace, trace2], layout, {displayModeBar:false});
 }
-
-
-
-
-
 
 
 function draw(){
@@ -467,7 +434,6 @@ function draw(){
         let intBdl2=intBdl;
         args_plot_Bdl(circuit, currentContainer);
         if (intBdl2!==intBdl) { //we have an update of the data
-            console.log('arguments changed!');
             $('#Bdl-text').html(`${(intBdl/mu0).toString().slice(0, 4)}*&mu;<sub>0<\sub>`); //print the value of Bdl on the page
 
             Plotly.react('graph-holder', [trace, trace2], layout, {displayModeBar: false});
@@ -476,6 +442,11 @@ function draw(){
     else{ //we are not in start position
         circuit.drawPath();
     }
+}
 
+//resize the canvas if the window size changes
+function windowResized() {
+    let width = $('#sketch-holder').width(), height = $('#sketch-holder').height();
+    resizeCanvas(width, height);
 }
 
