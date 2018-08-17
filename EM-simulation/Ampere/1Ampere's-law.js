@@ -25,7 +25,7 @@ function setup(){
                             //creating buttons for interraction
     buttonPlay = createButton("Play");
     buttonPlay.parent('buttons-holder');
-    buttonPlay.position(5, 20);
+    buttonPlay.position(5, 50);
     buttonPlay.mousePressed(function(){
         playing = true;
     });
@@ -257,7 +257,8 @@ const Wire= class {
         }
         strokeWeight(1);
         textSize(15);
-        text(`I= ${this.value}`, this.x+10, this.y+10);
+        let textI = 'I ('+this.index + ') =' + this.value;
+        text(textI, this.x+10, this.y+10);
         fill(255);
         }
 
