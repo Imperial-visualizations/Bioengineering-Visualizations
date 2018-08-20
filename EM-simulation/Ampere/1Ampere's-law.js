@@ -6,6 +6,8 @@ let buttonPlay, buttonPause, buttonField, buttonReset;
 let currentSlider,textAdviseSettings, tagCurrent, tagCurrentSlider, tagCurrentSliderMin, tagCurrentSliderMax, diameterSlider, tagDiamSlider;
 let buttonAddWire, buttonRemoveWires, currentSelectList, tagCurrentSelectList;
 
+let basicOffset = $('#buttons-holder').offset().left+5;
+
 
 /* Now the plotly part of declaration */
 let trace={x:[],y:[]}, layout, trace2={x:[],y:[]};
@@ -15,6 +17,15 @@ let B, Bdl=0, Btot, intBdl=0;
 
 function setup(){
     let width = $('#sketch-holder').width(), height = $('#sketch-holder').height();
+
+
+    $('#buttonPlay').click(buttonPlayFunction);
+    $('#buttonPause').click(buttonPauseFunction);
+    $('#buttonField').click(buttonFieldFunction);
+    $('#buttonAddWire').click(buttonAddWireFunction);
+    $('#buttonRemoveWires').click(buttonRemoveWiresFunction);
+    $('#buttonReset').click(buttonResetFunction);
+
     myCanvas = createCanvas(width, height);
     myCanvas.parent('sketch-holder');
     frameRate(60);
@@ -23,144 +34,6 @@ function setup(){
     theta=-Math.PI/2;
 
                             //creating buttons for interraction
-    buttonPlay = createButton("Play");
-    buttonPlay.parent('buttons-holder');
-    buttonPlay.position(5, 50);
-    buttonPlay.mousePressed(function(){
-        playing = true;
-    });
-
-    buttonPause = createButton("Pause");
-    buttonPause.parent('buttons-holder');
-    buttonPause.position(buttonPlay.x +buttonPlay.width+10, buttonPlay.y);
-    buttonPause.mousePressed(function(){
-        playing = false;
-    });
-
-    buttonField =createButton("Display Magnetic fields");
-    buttonField.parent('buttons-holder');
-    buttonField.position(buttonPlay.x, +buttonPlay.y+buttonPlay.height+10);
-    buttonField.mousePressed(function(){
-        fieldDisplay= !fieldDisplay;
-    });
-
-    //text for Settings: (telling them that it won't change if the animation is playing)
-    textAdviseSettings = createElement('p', "Settings can only be modified<br>when animation is on its start position");
-    textAdviseSettings.parent('buttons-holder');
-    textAdviseSettings.position(buttonPlay.x-20, buttonField.y+buttonField.height+20);
-    textAdviseSettings.style('font-size', '13px');
-
-    tagCurrent = createElement('p', "Current <b>I</b>:");
-    tagCurrent.parent('buttons-holder');
-    tagCurrent.position(buttonPlay.x-50, textAdviseSettings.y +textAdviseSettings.height+5);
-
-
-    tagCurrentSelectList = createElement('p' , "Select current<br>carrying wire:");
-    tagCurrentSelectList.parent('buttons-holder');
-    tagCurrentSelectList.position(buttonPlay.x-10, tagCurrent.y+tagCurrent.height+5);
-
-    currentSelectList= createSelect();
-    currentSelectList.parent('buttons-holder');
-    currentSelectList.id('currentSelectList');
-    currentSelectList.position(buttonPause.x, tagCurrent.y+tagCurrent.height+5);
-    currentSelectList.option('0');
-    currentSelectList.option('1');
-    currentSelectList.option('2');
-    currentSelectList.option('3');
-    currentSelectList.option('4');
-    currentSelectList.option('5');
-
-
-    currentSelectList.changed(function(){
-        let newVal = parseFloat(currentSelectList.value());
-        if(newVal<currentContainer.length) {
-            wireSelected = newVal;
-        }
-        console.log(wireSelected);
-    });
-
-
-    tagCurrentSlider = createElement('p', "Value <b>I</b>:");
-    tagCurrentSlider.parent('buttons-holder');
-    tagCurrentSlider.position(buttonPlay.x-50, currentSelectList.y +currentSelectList.height+20);
-
-    //slider for changing current
-    currentSlider = createSlider(-10, 10, 5, 0.1);
-    currentSlider.parent('buttons-holder');
-    currentSlider.position(buttonPlay.x, tagCurrentSlider.y+tagCurrentSlider.height);
-    currentSlider.style('width', '200px');
-    //limits of slider:
-    tagCurrentSliderMin = createElement('p', "-10A");
-    tagCurrentSliderMin.parent('buttons-holder');
-    tagCurrentSliderMin.position(buttonPlay.x+10, currentSlider.y+currentSlider.height*3/4);
-    tagCurrentSliderMax = createElement('p', "10A");
-    tagCurrentSliderMax.parent('buttons-holder');
-    tagCurrentSliderMax.position(currentSlider.x+currentSlider.width-30, currentSlider.y+currentSlider.height*3/4);
-
-
-
-    //slider for changing diameter of circuit
-    tagDiamSlider= createElement('p', "Diameter of loop:");
-    tagDiamSlider.parent('buttons-holder');
-    tagDiamSlider.position(buttonPlay.x-50, tagCurrentSliderMax.y+tagCurrentSliderMax.height+10);
-
-    diameterSlider = createSlider(1, 350, 150, 5);
-    diameterSlider.parent('buttons-holder');
-    diameterSlider.position(currentSlider.x, tagDiamSlider.y+tagDiamSlider.height);
-    diameterSlider.style('width', '200px');
-
-
-
-    //create button for adding wires:
-    buttonAddWire = createButton("Add current wire");
-    buttonAddWire.parent('buttons-holder');
-    buttonAddWire.position(diameterSlider.x, diameterSlider.y+diameterSlider.height+20);
-    buttonAddWire.mousePressed(function(){
-        //only in start condition:
-        if (theta>=-Math.PI/2&& theta<=-Math.PI/2+dTheta) {
-            addWire();
-            buttonRemoveWires.show();
-            if (currentContainer.length>=6){
-                buttonAddWire.hide();
-            }
-        }
-    });
-
-    buttonRemoveWires = createButton("Remove Wires");
-    buttonRemoveWires. parent('buttons-holder');
-    buttonRemoveWires.position(buttonAddWire.x, buttonAddWire.y+buttonAddWire.height+10);
-    buttonRemoveWires.mousePressed(function(){
-        if (!playing && theta>=-Math.PI/2 &&theta<=Math.PI/2+dTheta) {
-            currentContainer.splice(1, currentContainer.length-1);
-            buttonRemoveWires.hide();
-            buttonAddWire.show();
-        }
-    });
-
-
-    buttonReset= createButton("Reset");
-    buttonReset.parent('buttons-holder');
-    buttonReset.position(buttonRemoveWires.x, buttonRemoveWires.y+buttonRemoveWires.height+30);
-    //what happens when we reset animation
-    buttonReset.mousePressed(function(){
-        playing=false;
-        theta=-Math.PI/2;
-        currentContainer[0].x = circuit.x;
-        currentContainer[0].y=circuit.y;
-        for (let i=1; i<currentContainer.length; i++){
-            currentContainer[i].x = currentContainer[i].index * $('#sketch-holder').width() / 6;
-            currentContainer[i].y=20;
-        }
-
-        vectorB.x=circuit.x;
-        vectorB.y=circuit.y-circuit.diam/2;
-        this.r=[];
-        vectorB.update();
-        //reset the plot
-        args_plot_Bdl(circuit, currentContainer);
-        Plotly.react('graph-holder', [trace, trace2], layout, {displayModeBar: false});
-    });
-
 
 
     //get the first plot on the screen
@@ -207,6 +80,7 @@ const Wire= class {
         this.widthOuter=12;
         this.index = index;
         this.clicked=false;
+        this.color = 0;
     }
 
     intersect(){
@@ -241,7 +115,8 @@ const Wire= class {
     }
 
     drawWire() {
-        stroke(0);
+        push();
+        stroke(this.color);
         fill(255);
         ellipse(this.x, this.y, this.widthOuter, this.widthOuter);
         fill(0);
@@ -259,8 +134,8 @@ const Wire= class {
         textSize(15);
         let textI = 'I ('+this.index + ') =' + this.value;
         text(textI, this.x+10, this.y+10);
-        fill(255);
-        }
+        pop();
+    }
 
     drawField() { //for now only works for 1 wire since we only have concentric circles
         if (fieldDisplay) {
@@ -361,7 +236,7 @@ vectorB= {
 function addWire(){
     let index = currentContainer.length;
     if (index>5){ //maximum amount of wires we can add
-        buttonAddWire.hide();
+        $('#buttonAddWire').hide();
     }
     else {
         currentContainer.push(new Wire(index * $('#sketch-holder').width() / 6, 20, 5, index));
@@ -486,55 +361,34 @@ function initialPlot(){
     Plotly.newPlot('graph-holder', [trace, trace2], layout, {displayModeBar:false});
 }
 
-//for proper display of the drop list with currents
-// function checkCurrentListChoices(){
-//         for (let i=0; i<6; i++){
-//             if (i<currentContainer.length){
-//                 $("#currentSelectList option[value=i.toString()]").show();
-//                 console.log('showing!');
-//             } else{
-//                 $("#currentSelectList option[value=i.toString()]").hide();
-//                 console.log('hiding...');
-//             }
-//         }
-//         console.log('hello...?');
-//     }
 
 function draw(){
-    // checkCurrentListChoices();
     background (255);
     circuit.drawCircuit();
-    // checkCurrentListChoices();
     for (let i = 0; i < currentContainer.length; i++) {
-        if (theta>=-Math.PI/2&& theta<=-Math.PI/2+dTheta && !playing) {
+        if (checkStartPos()) {
             countingFrames=0;
             currentContainer[i].updateWirePos();
-            currentContainer[wireSelected].value = currentSlider.value();
+            currentContainer[wireSelected].value = $('#currentSlider').val();
 
             if (currentContainer[i].value>=0) {currentContainer[i].valueSign=1}
-        else  {currentContainer[i].valueSign=-1}
+            else  {currentContainer[i].valueSign=-1}
         }
         currentContainer[i].drawWire();
         currentContainer[i].drawField();
-        //add the frames
-
     }
 
     vectorB.update(); //redraw the arrows
 
-    if (playing) {
-        vectorB.updateAngle(); //we update the position of the arrow on the circuit
-        countingFrames++;
-        trace2.x = trace.x.slice(0, countingFrames+1);
-        trace2.y = trace.y.slice(0, countingFrames+1);
-        Plotly.react('graph-holder', [trace, trace2],layout, {displayModeBar: false});
-    }
 
-
-    //when we are in pause: we recalculate the plot for plotly
-    if (theta>=-Math.PI/2&& theta<=-Math.PI/2+dTheta){ //we are in the start position
-        circuit.diam= diameterSlider.value(); //update the diameter of the loop
+    //when we are in start position: we recalculate the plot for plotly
+    if (checkStartPos()){ //we are in the start position
+        if (wireSelected !== $('#currentSelectList').val()){
+            currentSelectListChanged();
+        }
+        circuit.diam= parseFloat($('#diameterSlider').val()); //update the diameter of the loop
         //plotly parameters:
+
         let intBdl2=intBdl;
         args_plot_Bdl(circuit, currentContainer);
         if (intBdl2!==intBdl) { //we have an update of the data
@@ -543,14 +397,85 @@ function draw(){
             Plotly.react('graph-holder', [trace, trace2], layout, {displayModeBar: false});
         }
     } else{ //we are not in start position
-        circuit.drawPath();
+        circuit.drawPath(); //draw the path from start position to current position
+    }
+
+    //while we play: we update the plotly graph to have the trace, we update the angle for the arrow
+    if (playing) {
+        vectorB.updateAngle(); //we update the position of the arrow on the circuit
+        countingFrames++;
+        trace2.x = trace.x.slice(0, countingFrames+1);
+        trace2.y = trace.y.slice(0, countingFrames+1);
+        Plotly.react('graph-holder', [trace, trace2],layout, {displayModeBar: false});
     }
 }
+
+//button functions:
+function buttonPlayFunction(){
+    playing = true;
+}
+function buttonPauseFunction(){
+    playing = false;
+}
+function buttonFieldFunction(){
+    fieldDisplay= !fieldDisplay;
+}
+function currentSelectListChanged(){
+    let newVal = parseFloat($('#currentSelectList').val());
+    currentContainer[wireSelected].color= 0;
+    if(newVal<currentContainer.length) {
+        wireSelected = newVal;
+    }
+    currentContainer[wireSelected].color= [50, 50, 250];
+}
+
+function buttonAddWireFunction(){
+    //only in start condition:
+    if (checkStartPos()) {
+        addWire();
+        $('#buttonRemoveWires').show();
+        if (currentContainer.length>=6){
+            $('#buttonAddWire').hide();
+        }
+    }
+}
+
+function buttonRemoveWiresFunction(){
+    if (checkStartPos()) {
+        currentContainer.splice(1, currentContainer.length-1);
+        $('#buttonRemoveWires').hide();
+        $('#buttonAddWire').show();
+    }
+}
+
+function buttonResetFunction(){
+    playing=false;
+    theta=-Math.PI/2;
+    vectorB.x=circuit.x;
+    vectorB.y=circuit.y-circuit.diam/2;
+    vectorB.update();
+    currentContainer[0].x = circuit.x;
+    currentContainer[0].y=circuit.y;
+    buttonRemoveWiresFunction(); //remove all the other wires
+    //reset the plot
+    args_plot_Bdl(circuit, currentContainer);
+    Plotly.react('graph-holder', [trace, trace2], layout, {displayModeBar: false});
+}
+
 
 //resize the canvas if the window size changes
 function windowResized() {
     let width = $('#sketch-holder').width(), height = $('#sketch-holder').height();
     resizeCanvas(width, height);
+
+}
+
+function checkStartPos(){
+    if (!playing && theta>=-Math.PI/2&& theta<=-Math.PI/2+dTheta){
+        return true;
+    }else{
+        return false;
+    }
 }
 
 
