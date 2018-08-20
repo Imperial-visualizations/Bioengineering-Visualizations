@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>Ramps | Mechanics</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.7.1/p5.js"></script>
+  	<link rel="stylesheet" href="https://rawgit.com/Imperial-visualizations/Physics-Visualizations/master/css/skeleton.css">
+	<link rel="stylesheet" href="https://rawgit.com/Imperial-visualizations/Physics-Visualizations/master/css/style.css">
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script type="text/javascript" async
+        src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML">
+    </script>
+    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+</head>
+
+<body>
+	<h1>The Effects of Static and Dynamic Friction</h1>
+    <div class="container">
+        <div class="row">
+            <div class="six columns">
+                <div id="canvas" style="width:500px; height:500px;"></div>
+            </div>
+
+            <div class="six columns">
+                <label class="sliderTitle">Static Friction:&nbsp;
+                    <span id="frictionStaticDisplay" data-unit="">1</span>
+                </label>
+                <label class="slider">
+                    <input id="frictionStatic" class="inputs" type="range" value="1" min="0" max="1" step="0.01"/>
+                </label>
+
+                <label class="sliderTitle">Dynamic Friction:&nbsp;
+                    <span id="frictionDynamicDisplay" data-unit="">1</span>
+                </label>
+                <label class="slider">
+                    <input id="frictionDynamic" class="inputs" type="range" value="1" min="0" max="1" step="0.01"/>
+                </label>
+
+                <label class="sliderTitle">Inclined Angle:&nbsp;
+                    <span id="angleDisplay" data-unit="º">45º</span>
+                </label>
+                <label class="slider">
+                    <input id="angle" class="inputs" type="range" value="45" min="0" max="60" step="1"/>
+                </label>
+
+                <label class="sliderTitle">Mass:&nbsp;
+                    <span id="massDisplay" data-unit="kg">15kg</span>
+                </label>
+                <label class="slider">
+                    <input id="mass" class="inputs" type="range" value="15" min="1" max="100" step="1"/>
+                </label>
+
+                <input id="playButton" class="button-primary" type="submit" value="Play">
+                <input id="forceButton" type="button" value="Show Forces">
+            </div>
+        </div>
+    </div>
+
+    <script src="rolling.js"></script>
+    <script src="rollingP5.js"></script>
+</body>
+
+</html>

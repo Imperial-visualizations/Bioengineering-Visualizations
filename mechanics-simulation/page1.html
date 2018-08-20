@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<title>Ramps | Mechanics</title>
+	<link href="main.css" rel="stylesheet">
+  <link rel="stylesheet" href="guidance.css">
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+  <link rel="stylesheet" href="https://rawgit.com/Imperial-visualizations/Physics-Visualizations/master/css/skeleton.css">
+	<link rel="stylesheet" href="https://rawgit.com/Imperial-visualizations/Physics-Visualizations/master/css/style.css">
+  <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+</head>
+
+<body>
+  <h1>Static Friction</h1>
+  <div class="guide">
+    I hate the world!
+  </div>
+
+  <div class="guideModal">
+      <div class="guideTest"></div>
+      <button class="backBtn">◀ Back</button> <button class="nextBtn">Next ▶</button>
+      <div class="modalContent">
+          <p id="modal_0">
+              This is the guidance for the Plane Intersection visualisation.
+          </p>
+          <p id="modal_1" hidden>
+              This is the graph that plots all the planes.
+          </p>
+          <p id="modal_2" hidden>
+              You can add plane, lines and points with these buttons.
+          </p>
+          <p id="modal_3" hidden>
+              This display shows the equation of the planes, lines and points and you can change the values.
+          </p>
+          <p id="modal_4" hidden>
+              This shows the equations of the intersections lines.
+          </p>
+          <p id="modal_5" hidden>
+              Have fun!
+          </p>
+      </div>
+  </div>
+	<div class="container">
+    <!--<canvas id="myCanvas" width="800" height="400"></canvas>-->
+	</div>
+
+
+	<div>
+     <p id="normal" style="position:absolute">$$N=mgcos(\theta)$$</p>
+     <!--<p id="force">$$F=F_a+mgsin(\theta)$$</p>-->
+   </div>
+   <div>
+
+
+<script src="libraries/p5.js"></script>
+<script src="libraries/p5.dom.js"></script>
+<script src="libraries/p5.sound.js"></script>
+<script src="guidance.js"></script>
+<script src="sketch1.js"></script>
+
+</body>
+
+</html>
