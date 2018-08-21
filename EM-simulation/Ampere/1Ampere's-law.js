@@ -1,13 +1,10 @@
 let currentContainer=[], arrows=[], myCanvas, countingFrames=0;
 let vectorB, theta=-Math.PI/2;
 const dTheta=0.01, mu0= 4*Math.PI*Math.pow(10, -7);
-let fieldDisplay=false, playing=false, mouseWasPressed=false, wireSelected =0;
-let buttonPlay, buttonPause, buttonField, buttonReset;
-let currentSlider,textAdviseSettings, tagCurrent, tagCurrentSlider, tagCurrentSliderMin, tagCurrentSliderMax, diameterSlider, tagDiamSlider;
-let buttonAddWire, buttonRemoveWires, currentSelectList, tagCurrentSelectList;
+let fieldDisplay=false, playing=false, mouseWasPressed=false, someWireClose=false, wireSelected =0;
+let precMouseX, precMouseY;
 
 let basicOffset = $('#buttons-holder').offset().left+5;
-
 
 /* Now the plotly part of declaration */
 let trace={x:[],y:[]}, layout, trace2={x:[],y:[]};
@@ -17,14 +14,15 @@ let B, Bdl=0, Btot, intBdl=0;
 
 function setup(){
     let width = $('#sketch-holder').width(), height = $('#sketch-holder').height();
-
-
+    precMouseX=mouseY;
+    precMouseY=mouseX;
     $('#buttonPlay').click(buttonPlayFunction);
     $('#buttonPause').click(buttonPauseFunction);
     $('#buttonField').click(buttonFieldFunction);
     $('#buttonAddWire').click(buttonAddWireFunction);
     $('#buttonRemoveWires').click(buttonRemoveWiresFunction);
     $('#buttonReset').click(buttonResetFunction);
+    $('#currentSelectList').change(currentSelectListChanged);
 
     myCanvas = createCanvas(width, height);
     myCanvas.parent('sketch-holder');
@@ -33,10 +31,6 @@ function setup(){
     currentContainer.push(new Wire(circuit.x, circuit.y, 5,0));
     theta=-Math.PI/2;
 
-                            //creating buttons for interraction
-
-
-    //get the first plot on the screen
     initialPlot();
 }
 
@@ -53,7 +47,6 @@ let circuit = {
         noFill();
         translate(this.x, this.y);
         ellipse(0, 0, this.diam, this.diam);
-
         pop();
     },
 
@@ -84,6 +77,7 @@ const Wire= class {
     }
 
     intersect(){
+
         let areintersecting = false;
         for (let i = 0; i < currentContainer.length; i++) {
             if(currentContainer[i]!=this){
@@ -92,15 +86,22 @@ const Wire= class {
                 }
             }
         }
+        //also case to avoid putting it out of the canvas
+        if (mouseX<=4||mouseY<=4||mouseX>=width||mouseY>=height)
+        {areintersecting =false;}
         return areintersecting;
     }
 
     pressed(){
         let distance =dist(mouseX,mouseY,this.x,this.y);
-        if (distance <= this.widthOuter+4 && mouseIsPressed && !mouseWasPressed){
-            this.clicked = true;
-            mouseWasPressed=true;
+        if (distance <= this.widthOuter+4 && !mouseWasPressed){
+            someWireClose=true;
+            if (mouseIsPressed) {
+                this.clicked = true;
+                mouseWasPressed = true;
+            }
         }
+
         if (this.clicked && !mouseIsPressed){
             this.clicked = false;
             mouseWasPressed=false;
@@ -114,6 +115,13 @@ const Wire= class {
         }
     }
 
+    selectingWire(){
+        if (this.clicked){
+            wireSelected = this.index;
+            $('#currentSelectList').val(wireSelected.toString());
+            $('#currentSlider').val(this.value.toString());
+        }
+    }
     drawWire() {
         push();
         stroke(this.color);
@@ -141,22 +149,54 @@ const Wire= class {
         if (fieldDisplay) {
             stroke(0, 150, 50);
             if (this.value!==0) {
-                let avoidBug='useless';
-                //here: have new ways of tracing the magnetic fields
+                //if (currentContainer.length===1) {//concentric circles
+                       for (let r = circuit.diam / 3 / Math.abs(this.value); r <= $('#sketch-holder').width() || r <= $('#sketch-holder').width(); r += r) {
+                           noFill();
+                           //draw small arrow to indicate direction
+                           ellipse(this.x, this.y, 2 * r, 2 * r);
+                           //draw arrows to show direction of magnetic fields
+                           line(this.x + r, this.y, this.x + r - this.valueSign * 4, this.y - this.valueSign * 4);
+                           line(this.x + r, this.y, this.x + r + this.valueSign * 4, this.y - this.valueSign * 4);
+                           line(this.x - r, this.y, this.x - r - this.valueSign * 4, this.y + this.valueSign * 4);
+                           line(this.x - r, this.y, this.x - r + this.valueSign * 4, this.y + this.valueSign * 4);
+                       }
+                //    } else {   //here: have new ways of tracing the magnetic fields
+                //
+                //     let deltaD = circuit.diam/6;
+                //
+                //     for (let i=0; i<currentContainer.length-1; i++){
+                //         let posX1 = currentContainer[i].x;
+                //         let posX2 = currentContainer[i+1].x;
+                //         let posY1 = currentContainer[i].y;
+                //         let posY2 = currentContainer[i+1].y;
+                //         let vect = [posX2-posX1, posY2-posY1], travelled=deltaD, B=[];
+                //
+                //         let toTravel= vectorLength(vect);
+                //         //in between 2 wires
+                //         for (let k=1; k<toTravel; k+=deltaD){
+                //             let nowX, nowY, ;
+                //             nowX=posX1+k*vect[0]/vectorLength(vect)*deltaD;
+                //             nowY = posY1 +k*vect[1]/vectorLength(vect)*deltaD;
+                //
+                //             while (nowX>)
+                //             B.push(calculateB(currentContainer, nowX, nowY);
+                //             let Bval = vectorLenght(B);
+                //             let Bx = B[0]/Bval, By = B[1]/Bval;
+                //             line(nowX, nowY, nowX+Bx, nowY+By);
+                //             nowX +=Bx;
+                //             nowY +=By;
+                //         }
+                //
+                //         push();
+                //         let angle = atan2(vect[1], vect[0]);
+                //         translate(currentContainer[i].x, currentContainer[i].y);
+                //         rotate(angle);
+                //     }
+                // }
 
 
 
-                //concentric circles
-                for (let r = circuit.diam / 3/ Math.abs(this.value); r <= $('#sketch-holder').width() || r <= $('#sketch-holder').width(); r += r) {
-                    noFill();
-                    //draw small arrow to indicate direction
-                    ellipse(this.x, this.y, 2*r, 2*r);
-                    //draw arrows to show direction of magnetic fields
-                    line(this.x + r, this.y, this.x + r -  this.valueSign* 4, this.y - this.valueSign*4);
-                    line(this.x + r, this.y, this.x + r + this.valueSign*4, this.y - this.valueSign*4);
-                    line(this.x - r, this.y, this.x - r - this.valueSign*4, this.y + this.valueSign*4);
-                    line(this.x - r, this.y, this.x - r + this.valueSign*4, this.y + this.valueSign*4);
-                }
+
             }
         }
     }
@@ -240,6 +280,7 @@ function addWire(){
     }
     else {
         currentContainer.push(new Wire(index * $('#sketch-holder').width() / 6, 20, 5, index));
+        wireSelected = index;
     }
 }
 
@@ -361,55 +402,6 @@ function initialPlot(){
     Plotly.newPlot('graph-holder', [trace, trace2], layout, {displayModeBar:false});
 }
 
-
-function draw(){
-    background (255);
-    circuit.drawCircuit();
-    for (let i = 0; i < currentContainer.length; i++) {
-        if (checkStartPos()) {
-            countingFrames=0;
-            currentContainer[i].updateWirePos();
-            currentContainer[wireSelected].value = $('#currentSlider').val();
-
-            if (currentContainer[i].value>=0) {currentContainer[i].valueSign=1}
-            else  {currentContainer[i].valueSign=-1}
-        }
-        currentContainer[i].drawWire();
-        currentContainer[i].drawField();
-    }
-
-    vectorB.update(); //redraw the arrows
-
-
-    //when we are in start position: we recalculate the plot for plotly
-    if (checkStartPos()){ //we are in the start position
-        if (wireSelected !== $('#currentSelectList').val()){
-            currentSelectListChanged();
-        }
-        circuit.diam= parseFloat($('#diameterSlider').val()); //update the diameter of the loop
-        //plotly parameters:
-
-        let intBdl2=intBdl;
-        args_plot_Bdl(circuit, currentContainer);
-        if (intBdl2!==intBdl) { //we have an update of the data
-            $('#Bdl-text').html(`${(intBdl/mu0).toString().slice(0, 4)}*&mu;<sub>0<\sub>`); //print the value of Bdl on the page
-
-            Plotly.react('graph-holder', [trace, trace2], layout, {displayModeBar: false});
-        }
-    } else{ //we are not in start position
-        circuit.drawPath(); //draw the path from start position to current position
-    }
-
-    //while we play: we update the plotly graph to have the trace, we update the angle for the arrow
-    if (playing) {
-        vectorB.updateAngle(); //we update the position of the arrow on the circuit
-        countingFrames++;
-        trace2.x = trace.x.slice(0, countingFrames+1);
-        trace2.y = trace.y.slice(0, countingFrames+1);
-        Plotly.react('graph-holder', [trace, trace2],layout, {displayModeBar: false});
-    }
-}
-
 //button functions:
 function buttonPlayFunction(){
     playing = true;
@@ -422,11 +414,25 @@ function buttonFieldFunction(){
 }
 function currentSelectListChanged(){
     let newVal = parseFloat($('#currentSelectList').val());
-    currentContainer[wireSelected].color= 0;
     if(newVal<currentContainer.length) {
         wireSelected = newVal;
+        $('#currentSlider').val(currentContainer[wireSelected].value.toString());
     }
-    currentContainer[wireSelected].color= [50, 50, 250];
+    else{
+        $('#currentSelectList').val(wireSelected.toString());
+    }
+}
+
+function currentSelectListDisplay(){
+    let currentLength = currentContainer.length-1;
+    for (i=0; i<=5; i++){
+        if (i>currentLength){
+            $('#currentSelectList option[value='+i.toString()+']').hide();
+        }
+        else{
+            $('#currentSelectList option[value='+i.toString()+']').show();
+        }
+    }
 }
 
 function buttonAddWireFunction(){
@@ -442,9 +448,13 @@ function buttonAddWireFunction(){
 
 function buttonRemoveWiresFunction(){
     if (checkStartPos()) {
-        currentContainer.splice(1, currentContainer.length-1);
+        let currents = currentContainer.length;
+        currentContainer.splice(1, currents-1);
         $('#buttonRemoveWires').hide();
         $('#buttonAddWire').show();
+        wireSelected = 0;
+        $('#currentSelectList').val(wireSelected.toString());
+
     }
 }
 
@@ -462,14 +472,6 @@ function buttonResetFunction(){
     Plotly.react('graph-holder', [trace, trace2], layout, {displayModeBar: false});
 }
 
-
-//resize the canvas if the window size changes
-function windowResized() {
-    let width = $('#sketch-holder').width(), height = $('#sketch-holder').height();
-    resizeCanvas(width, height);
-
-}
-
 function checkStartPos(){
     if (!playing && theta>=-Math.PI/2&& theta<=-Math.PI/2+dTheta){
         return true;
@@ -478,4 +480,108 @@ function checkStartPos(){
     }
 }
 
+//resize the canvas if the window size changes
+function windowResized() {
+    let width = $('#sketch-holder').width(), height = $('#sketch-holder').height();
+    resizeCanvas(width, height);
 
+}
+
+function draw(){
+        background(255);
+        currentSelectListDisplay();
+        circuit.drawCircuit();
+        for (let i = 0; i < currentContainer.length; i++) {
+
+            if (checkStartPos()) {
+                currentContainer[i].selectingWire(); //checks if we are currently selecting the wire
+                if (wireSelected === i) {
+                    currentContainer[i].color = [50, 50, 200];
+                }
+                else {
+                    currentContainer[i].color = 0;
+                }
+                currentContainer[i].updateWirePos();
+                currentContainer[wireSelected].value = $('#currentSlider').val();
+
+                if (currentContainer[i].value >= 0) {
+                    currentContainer[i].valueSign = 1
+                }
+                else {
+                    currentContainer[i].valueSign = -1
+                }
+            }
+            currentContainer[i].drawWire();
+            currentContainer[i].drawField();
+        }
+
+        vectorB.update(); //redraw the arrows
+
+        //when we are in start position: we recalculate the plot for plotly
+        if (checkStartPos()) { //we are in the start position
+            if (someWireClose && !mouseWasPressed) {
+                $('#sketch-holder').css('cursor', 'grab');
+            }
+            else if (mouseWasPressed) {
+                $('#sketch-holder').css('cursor', 'grabbing');
+            }
+            else {
+                $('#sketch-holder').css('cursor', 'default');
+            }
+            someWireClose = false;
+
+            circuit.diam = parseFloat($('#diameterSlider').val()); //update the diameter of the loop
+            //plotly parameters:
+
+            countingFrames = 0; //we have not started the animation
+            let intBdl2 = intBdl;
+            args_plot_Bdl(circuit, currentContainer);
+            if (intBdl2 !== intBdl) { //we have an update of the data
+                $('#Bdl-text').html(`${(intBdl / mu0).toString().slice(0, 4)}*&mu;<sub>0<\sub>`); //print the value of Bdl on the page
+
+                Plotly.react('graph-holder', [trace, trace2], layout, {displayModeBar: false});
+            }
+        } else { //we are not in start position
+            circuit.drawPath(); //draw the path from start position to current position
+        }
+
+        //while we play: we update the plotly graph to have the trace, we update the angle for the arrow
+        if (playing) {
+            vectorB.updateAngle(); //we update the position of the arrow on the circuit
+            countingFrames++;
+            trace2.x = trace.x.slice(0, countingFrames + 1);
+            trace2.y = trace.y.slice(0, countingFrames + 1);
+            Plotly.react('graph-holder', [trace, trace2], layout, {displayModeBar: false});
+        }
+        tryFindCentre();
+
+    precMouseX= mouseX;
+    precMouseY = mouseY;
+}
+
+
+
+function tryFindCentre(){
+    /*will return and draw a cross in the location of the "centre of current"
+     with value of magnetic field at that point */
+    let posX=0, posY=0, totalCurrent=0;
+
+    for (let i=0; i<currentContainer.length; i++){
+        let current = parseFloat(currentContainer[i].value);
+        totalCurrent+=current;
+        posX += current*parseFloat(currentContainer[i].x);
+        posY+= current*parseFloat(currentContainer[i].y);
+    }
+    posX = posX/totalCurrent;
+    posY = posY/totalCurrent;
+
+    push();
+    stroke('red');
+    translate(posX, posY);
+    line(-5, -5, 5, 5);
+    line (-5, 5, 5, -5);
+    let Bfield = vectorLength(calculateB(currentContainer, posX, posY)).toString();
+    let BF = Bfield.slice(0, 4);
+    text('B='+ BF, 10, 10);
+    pop();
+}
