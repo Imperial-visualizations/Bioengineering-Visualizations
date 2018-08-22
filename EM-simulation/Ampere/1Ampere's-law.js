@@ -87,8 +87,8 @@ const Wire= class {
             }
         }
         //also case to avoid putting it out of the canvas
-        if (mouseX<=4||mouseY<=4||mouseX>=width||mouseY>=height)
-        {areintersecting =false;}
+        if (mouseIsPressed &&(mouseX<=4||mouseY<=4||mouseX>=width||mouseY>=height))
+        {areintersecting =true;}
         return areintersecting;
     }
 
@@ -145,59 +145,28 @@ const Wire= class {
         pop();
     }
 
-    drawField() { //for now only works for 1 wire since we only have concentric circles
+    static drawField(wires) { //for now only works for 1 wire since we only have concentric circles
         if (fieldDisplay) {
             stroke(0, 150, 50);
-            if (this.value!==0) {
-                //if (currentContainer.length===1) {//concentric circles
-                       for (let r = circuit.diam / 3 / Math.abs(this.value); r <= $('#sketch-holder').width() || r <= $('#sketch-holder').width(); r += r) {
-                           noFill();
-                           //draw small arrow to indicate direction
-                           ellipse(this.x, this.y, 2 * r, 2 * r);
-                           //draw arrows to show direction of magnetic fields
-                           line(this.x + r, this.y, this.x + r - this.valueSign * 4, this.y - this.valueSign * 4);
-                           line(this.x + r, this.y, this.x + r + this.valueSign * 4, this.y - this.valueSign * 4);
-                           line(this.x - r, this.y, this.x - r - this.valueSign * 4, this.y + this.valueSign * 4);
-                           line(this.x - r, this.y, this.x - r + this.valueSign * 4, this.y + this.valueSign * 4);
-                       }
-                //    } else {   //here: have new ways of tracing the magnetic fields
-                //
-                //     let deltaD = circuit.diam/6;
-                //
-                //     for (let i=0; i<currentContainer.length-1; i++){
-                //         let posX1 = currentContainer[i].x;
-                //         let posX2 = currentContainer[i+1].x;
-                //         let posY1 = currentContainer[i].y;
-                //         let posY2 = currentContainer[i+1].y;
-                //         let vect = [posX2-posX1, posY2-posY1], travelled=deltaD, B=[];
-                //
-                //         let toTravel= vectorLength(vect);
-                //         //in between 2 wires
-                //         for (let k=1; k<toTravel; k+=deltaD){
-                //             let nowX, nowY, ;
-                //             nowX=posX1+k*vect[0]/vectorLength(vect)*deltaD;
-                //             nowY = posY1 +k*vect[1]/vectorLength(vect)*deltaD;
-                //
-                //             while (nowX>)
-                //             B.push(calculateB(currentContainer, nowX, nowY);
-                //             let Bval = vectorLenght(B);
-                //             let Bx = B[0]/Bval, By = B[1]/Bval;
-                //             line(nowX, nowY, nowX+Bx, nowY+By);
-                //             nowX +=Bx;
-                //             nowY +=By;
-                //         }
-                //
-                //         push();
-                //         let angle = atan2(vect[1], vect[0]);
-                //         translate(currentContainer[i].x, currentContainer[i].y);
-                //         rotate(angle);
-                //     }
-                // }
+            // if (wires.length === 1) {//concentric circles
+                if (wires[0].value!==0) {
+                    for (let r = circuit.diam / 3 / Math.abs(wires[0].value); r <= $('#sketch-holder').width() || r <= $('#sketch-holder').width(); r += r) {
+                        push();
+                        translate(wires[0].x, wires[0].y);
+                        let sign = wires[0].valueSign;
+                        noFill();
+                        //draw small arrow to indicate direction
+                        ellipse(0,0, 2 * r, 2 * r);
+                        //draw arrows to show direction of magnetic fields
+                        line(r, 0, r - sign * 4,  - sign * 4);
+                        line(r, 0,  r + sign * 4,  - sign * 4);
+                        line(- r, 0, - r - sign * 4, sign * 4);
+                        line(- r, 0,- r + sign * 4, sign * 4);
+                        pop();
+                    }
+                }
 
-
-
-
-            }
+            // }
         }
     }
 };
@@ -512,9 +481,9 @@ function draw(){
                 }
             }
             currentContainer[i].drawWire();
-            currentContainer[i].drawField();
-        }
 
+        }
+        Wire.drawField(currentContainer);
         vectorB.update(); //redraw the arrows
 
         //when we are in start position: we recalculate the plot for plotly
@@ -547,13 +516,14 @@ function draw(){
 
         //while we play: we update the plotly graph to have the trace, we update the angle for the arrow
         if (playing) {
+            for (let i=0; i<currentContainer.length; i++){currentContainer[i].color = 0;}
             vectorB.updateAngle(); //we update the position of the arrow on the circuit
             countingFrames++;
             trace2.x = trace.x.slice(0, countingFrames + 1);
             trace2.y = trace.y.slice(0, countingFrames + 1);
             Plotly.react('graph-holder', [trace, trace2], layout, {displayModeBar: false});
         }
-        tryFindCentre();
+        //tryFindMinIfExists();
 
     precMouseX= mouseX;
     precMouseY = mouseY;
@@ -561,27 +531,79 @@ function draw(){
 
 
 
-function tryFindCentre(){
-    /*will return and draw a cross in the location of the "centre of current"
-     with value of magnetic field at that point */
-    let posX=0, posY=0, totalCurrent=0;
+// function tryFindCentre(){
+//     /*will return and draw a cross in the location of the "centre of current"
+//      with value of magnetic field at that point */
+//     let posX=0, posY=0, totalCurrent=0;
+//
+//     for (let i=0; i<currentContainer.length; i++){
+//         let current = parseFloat(currentContainer[i].value);
+//         totalCurrent+=current;
+//         posX += current*parseFloat(currentContainer[i].x);
+//         posY+= current*parseFloat(currentContainer[i].y);
+//     }
+//     if (totalCurrent !==0) {
+//         posX = posX / totalCurrent;
+//         posY = posY / totalCurrent;
+//
+//         push();
+//         stroke('red');
+//         translate(posX, posY);
+//         line(-5, -5, 5, 5);
+//         line(-5, 5, 5, -5);
+//         let Bfield = vectorLength(calculateB(currentContainer, posX, posY)).toString();
+//         let BF = Bfield.slice(0, 4);
+//         text('B=' + BF, 10, 10);
+//         pop();
+//         return [posX, posY];
+//     }
+// }
+//
+// function tryFindMinIfExists(){
+//     let posXPos=0, posYPos=0, totalCurrentPos=0, posXNeg=0, posYNeg=0, totalCurrentNeg=0, posX, posY;
+//
+//     for (let i=0; i<currentContainer.length; i++){
+//         let current = parseFloat(currentContainer[i].value);
+//         if (current>=0) {
+//             totalCurrentPos += current;
+//             posXPos += current * parseFloat(currentContainer[i].x);
+//             posYPos += current * parseFloat(currentContainer[i].y);
+//         }
+//         else {
+//             totalCurrentNeg += current;
+//             posXNeg += current * parseFloat(currentContainer[i].x);
+//             posYNeg += current * parseFloat(currentContainer[i].y);
+//         }
+//     }
+//         if (totalCurrentPos !==0) {
+//             posXPos = posXPos / totalCurrentPos;
+//             posYPos = posYPos / totalCurrentPos;
+//         }
+//         else {
+//             posXPos = posXNeg/totalCurrentNeg;
+//             posYPos = posXNeg/totalCurrentNeg;
+//         }
+//         if (totalCurrentNeg !==0) {
+//             posXNeg = posXNeg / totalCurrentNeg;
+//             posYNeg = posYNeg / totalCurrentNeg;
+//         }
+//         else {
+//             posXNeg = posXPos / totalCurrentPos;
+//             posYNeg = posYPos / totalCurrentPos;
+//         }
+//         posX = (posXPos + posXNeg) / 2 ;
+//         posY = (posYPos + posYNeg) / 2 ;
+//
+//         push();
+//         stroke('yellow');
+//         translate(posX, posY);
+//         line(-5, -5, 5, 5);
+//         line(-5, 5, 5, -5);
+//         let Bfield = calculateB(currentContainer, posX, posY).toString();
+//         let BF = Bfield.slice(0, 4);
+//         text('B=' + BF, 10, 10);
+//         console.log('Centers: '+posX +' '+ posY);
+//         pop();
+//         return [[posXPos, posYPos], [posXNeg, posYNeg]];
+// }
 
-    for (let i=0; i<currentContainer.length; i++){
-        let current = parseFloat(currentContainer[i].value);
-        totalCurrent+=current;
-        posX += current*parseFloat(currentContainer[i].x);
-        posY+= current*parseFloat(currentContainer[i].y);
-    }
-    posX = posX/totalCurrent;
-    posY = posY/totalCurrent;
-
-    push();
-    stroke('red');
-    translate(posX, posY);
-    line(-5, -5, 5, 5);
-    line (-5, 5, 5, -5);
-    let Bfield = vectorLength(calculateB(currentContainer, posX, posY)).toString();
-    let BF = Bfield.slice(0, 4);
-    text('B='+ BF, 10, 10);
-    pop();
-}
