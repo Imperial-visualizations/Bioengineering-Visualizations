@@ -2,7 +2,6 @@ let currentContainer=[], arrows=[], myCanvas, countingFrames=0;
 let vectorB, theta=-Math.PI/2;
 const dTheta=0.01, mu0= 4*Math.PI*Math.pow(10, -7);
 let fieldDisplay=false, playing=false, mouseWasPressed=false, someWireClose=false, wireSelected =0;
-let precMouseX, precMouseY;
 
 let basicOffset = $('#buttons-holder').offset().left+5;
 
@@ -14,31 +13,28 @@ let B, Bdl=0, Btot, intBdl=0;
 
 function setup(){
     let width = $('#sketch-holder').width(), height = $('#sketch-holder').height();
-    precMouseX=mouseY;
-    precMouseY=mouseX;
+    //link the functions to the buttons
     $('#buttonPlay').click(buttonPlayFunction);
     $('#buttonPause').click(buttonPauseFunction);
     $('#buttonField').click(buttonFieldFunction);
     $('#buttonAddWire').click(buttonAddWireFunction);
     $('#buttonRemoveWires').click(buttonRemoveWiresFunction);
     $('#buttonReset').click(buttonResetFunction);
-    $('#currentSelectList').change(currentSelectListChanged);
+    // $('#currentSelectList').change(currentSelectListChanged);
 
     myCanvas = createCanvas(width, height);
     myCanvas.parent('sketch-holder');
     frameRate(60);
     //create the first current-carrying wire
     currentContainer.push(new Wire(circuit.x, circuit.y, 5,0));
-    theta=-Math.PI/2;
-
     initialPlot();
 }
 
 //defining the looop
 let circuit = {
-    diam:200,
-    x:$('#sketch-holder').width()/2,
-    y: $('#sketch-holder').height()/2,
+    diam:200, //initial diameter
+    x:$('#sketch-holder').width()/2, //centered
+    y: $('#sketch-holder').height()/2, //centered
 
     drawCircuit() {
         push();
@@ -76,8 +72,7 @@ const Wire= class {
         this.color = 0;
     }
 
-    intersect(){
-
+    intersect(){ //check if we are close to a forbidden area
         let areintersecting = false;
         for (let i = 0; i < currentContainer.length; i++) {
             if(currentContainer[i]!=this){
@@ -87,7 +82,7 @@ const Wire= class {
             }
         }
         //also case to avoid putting it out of the canvas
-        if (mouseIsPressed &&(mouseX<=4||mouseY<=4||mouseX>=width||mouseY>=height))
+        if (mouseIsPressed &&(mouseX<=4||mouseY<=4||mouseX>=width||mouseY>=height-10))
         {areintersecting =true;}
         return areintersecting;
     }
@@ -118,14 +113,15 @@ const Wire= class {
     selectingWire(){
         if (this.clicked){
             wireSelected = this.index;
-            $('#currentSelectList').val(wireSelected.toString());
+            // $('#currentSelectList').val(wireSelected.toString());
             $('#currentSlider').val(this.value.toString());
         }
     }
+
     drawWire() {
         push();
         stroke(this.color);
-        fill(255);
+        noFill();
         ellipse(this.x, this.y, this.widthOuter, this.widthOuter);
         fill(0);
         strokeWeight(1);
@@ -171,7 +167,7 @@ const Wire= class {
     }
 };
 
-vectorB= {
+vectorB= { //describes the green vector B and the small increase element dl at position (diam/2, theta)
     x: circuit.x,
     y:circuit.y-circuit.diam/2,
     length : 0,
@@ -221,10 +217,8 @@ vectorB= {
         //draw small increase element dl
         fill(0);
         rotate(-angle);
-        rotate(theta);
-
+        rotate(theta); //arrow on the circuit
         strokeWeight(2);
-
         stroke(200, 0, 200);
         line(0,0, -6, -10);
         line(0,0, 6, -10);
@@ -371,6 +365,10 @@ function initialPlot(){
     Plotly.newPlot('graph-holder', [trace, trace2], layout, {displayModeBar:false});
 }
 
+function updateValues() {
+
+}
+
 //button functions:
 function buttonPlayFunction(){
     playing = true;
@@ -381,28 +379,28 @@ function buttonPauseFunction(){
 function buttonFieldFunction(){
     fieldDisplay= !fieldDisplay;
 }
-function currentSelectListChanged(){
-    let newVal = parseFloat($('#currentSelectList').val());
-    if(newVal<currentContainer.length) {
-        wireSelected = newVal;
-        $('#currentSlider').val(currentContainer[wireSelected].value.toString());
-    }
-    else{
-        $('#currentSelectList').val(wireSelected.toString());
-    }
-}
+// function currentSelectListChanged(){
+//     let newVal = parseFloat($('#currentSelectList').val());
+//     if(newVal<currentContainer.length) {
+//         wireSelected = newVal;
+//         $('#currentSlider').val(currentContainer[wireSelected].value.toString());
+//     }
+//     else{
+//         $('#currentSelectList').val(wireSelected.toString());
+//     }
+// }
 
-function currentSelectListDisplay(){
-    let currentLength = currentContainer.length-1;
-    for (i=0; i<=5; i++){
-        if (i>currentLength){
-            $('#currentSelectList option[value='+i.toString()+']').hide();
-        }
-        else{
-            $('#currentSelectList option[value='+i.toString()+']').show();
-        }
-    }
-}
+// function currentSelectListDisplay(){
+//     let currentLength = currentContainer.length-1;
+//     for (i=0; i<=5; i++){
+//         if (i>currentLength){
+//             $('#currentSelectList option[value='+i.toString()+']').hide();
+//         }
+//         else{
+//             $('#currentSelectList option[value='+i.toString()+']').show();
+//         }
+//     }
+// }
 
 function buttonAddWireFunction(){
     //only in start condition:
@@ -422,7 +420,7 @@ function buttonRemoveWiresFunction(){
         $('#buttonRemoveWires').hide();
         $('#buttonAddWire').show();
         wireSelected = 0;
-        $('#currentSelectList').val(wireSelected.toString());
+        // $('#currentSelectList').val(wireSelected.toString());
 
     }
 }
@@ -456,77 +454,84 @@ function windowResized() {
 
 }
 
-function draw(){
-        background(255);
-        currentSelectListDisplay();
-        circuit.drawCircuit();
-        for (let i = 0; i < currentContainer.length; i++) {
-
-            if (checkStartPos()) {
-                currentContainer[i].selectingWire(); //checks if we are currently selecting the wire
-                if (wireSelected === i) {
-                    currentContainer[i].color = [50, 50, 200];
-                }
-                else {
-                    currentContainer[i].color = 0;
-                }
-                currentContainer[i].updateWirePos();
-                currentContainer[wireSelected].value = $('#currentSlider').val();
-
-                if (currentContainer[i].value >= 0) {
-                    currentContainer[i].valueSign = 1
-                }
-                else {
-                    currentContainer[i].valueSign = -1
-                }
-            }
-            currentContainer[i].drawWire();
-
+function mouseShape(){
+    if (checkStartPos()) { //we are in the start position
+        if (someWireClose && !mouseWasPressed) {
+            $('#sketch-holder').css('cursor', 'grab');
         }
-        Wire.drawField(currentContainer);
-        vectorB.update(); //redraw the arrows
+        else if (mouseWasPressed) {
+            $('#sketch-holder').css('cursor', 'grabbing');
+        }
+        else {
+            $('#sketch-holder').css('cursor', 'default');
+        }
+        someWireClose = false;
+    }
+}
 
-        //when we are in start position: we recalculate the plot for plotly
-        if (checkStartPos()) { //we are in the start position
-            if (someWireClose && !mouseWasPressed) {
-                $('#sketch-holder').css('cursor', 'grab');
-            }
-            else if (mouseWasPressed) {
-                $('#sketch-holder').css('cursor', 'grabbing');
+function updateValuesFromSlider(){
+    let val = $('#currentSlider').val();
+    currentContainer[wireSelected].value = val;
+
+    if (val >= 0) {
+        currentContainer[wireSelected].valueSign = 1;
+    } else {
+        currentContainer[wireSelected].valueSign = -1;
+    }
+    $('#currentValue').html(val.toString().slice(0, 3));
+
+    circuit.diam = parseFloat($('#diameterSlider').val()); //update the diameter of the loop
+}
+
+function draw(){
+    background(255);
+    // currentSelectListDisplay();
+    circuit.drawCircuit();
+    for (let i = 0; i < currentContainer.length; i++) {
+        if (checkStartPos()) {
+            currentContainer[i].selectingWire(); //checks if we are currently selecting the wire
+            if (wireSelected === i) {
+                currentContainer[i].color = [50, 50, 200];
             }
             else {
-                $('#sketch-holder').css('cursor', 'default');
+                currentContainer[i].color = 0;
             }
-            someWireClose = false;
-
-            circuit.diam = parseFloat($('#diameterSlider').val()); //update the diameter of the loop
-            //plotly parameters:
-
-            countingFrames = 0; //we have not started the animation
-            let intBdl2 = intBdl;
-            args_plot_Bdl(circuit, currentContainer);
-            if (intBdl2 !== intBdl) { //we have an update of the data
-                $('#Bdl-text').html(`${(intBdl / mu0).toString().slice(0, 4)}*&mu;<sub>0<\sub>`); //print the value of Bdl on the page
-
-                Plotly.react('graph-holder', [trace, trace2], layout, {displayModeBar: false});
-            }
-        } else { //we are not in start position
-            circuit.drawPath(); //draw the path from start position to current position
+            currentContainer[i].updateWirePos();
         }
+        currentContainer[i].drawWire(); //always draw the wires
+    }
+    Wire.drawField(currentContainer);
+    vectorB.update(); //redraw the arrows
+    mouseShape();
 
-        //while we play: we update the plotly graph to have the trace, we update the angle for the arrow
-        if (playing) {
-            for (let i=0; i<currentContainer.length; i++){currentContainer[i].color = 0;}
-            vectorB.updateAngle(); //we update the position of the arrow on the circuit
-            countingFrames++;
-            trace2.x = trace.x.slice(0, countingFrames + 1);
-            trace2.y = trace.y.slice(0, countingFrames + 1);
+    //when we are in start position:
+    if (checkStartPos()) {
+        //updates from sliders
+        updateValuesFromSlider();
+        //display value of wire selected
+        $('#wireSelected').html(wireSelected.toString());
+
+        //plotly parameters:
+        countingFrames = 0; //we have not started the animation
+        let intBdl2 = intBdl;// keep the old value of Bdl
+        args_plot_Bdl(circuit, currentContainer);
+        if (intBdl2 !== intBdl) { // only if update of the data
+            $('#Bdl-text').html(`${(intBdl / mu0).toString().slice(0, 4)}*&mu;<sub>0<\sub>`); //print the value of Bdl on the page
             Plotly.react('graph-holder', [trace, trace2], layout, {displayModeBar: false});
         }
-        //tryFindMinIfExists();
+    } else { //we are not in start position
+        circuit.drawPath(); //draw the path from start position to current position
+    }
 
-    precMouseX= mouseX;
-    precMouseY = mouseY;
+    //while we play: we update the plotly graph to have the trace, we update the angle for the arrow
+    if (playing) {
+        for (let i=0; i<currentContainer.length; i++){currentContainer[i].color = 0;}
+        vectorB.updateAngle(); //we update the position of the arrow on the circuit
+        countingFrames++;
+        trace2.x = trace.x.slice(0, countingFrames + 1);
+        trace2.y = trace.y.slice(0, countingFrames + 1);
+        Plotly.react('graph-holder', [trace, trace2], layout, {displayModeBar: false});
+    }
 }
 
 
