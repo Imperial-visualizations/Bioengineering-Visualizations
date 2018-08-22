@@ -25,7 +25,8 @@ function resetSketch() {
     strokeWeight(2);
     stroke(0);
     ellipse(startx + (mass / 2.7), starty - (mass / 2.7), 30 + mass, 30 + mass);
-
+    fill('blue');
+    //rect(-228, -270*tan(angleRamp)-28, 5, 28 + mass);
     // Ramp
     noFill();
     line(-250, -270*tan(angleRamp), 0, 0);
@@ -95,9 +96,8 @@ function draw() {
     startx = -230;
 
     if(isRunning){
-        if (xPos >= 240 || yPos >= 240) {
+        if (xPos >= 240) {
             xPos = 240;
-            yPos = 240;
         }
         if (frictionStatic > 0) {
             push();
@@ -109,12 +109,12 @@ function draw() {
             ellipse(0, 0, 30 + mass, 30 + mass);
             fill(0, 110, 175);
             rect(0, 0, 5, 30 + mass);
-            angle = angle + 5+angleRamp;
+            angle = angle +5+(angleRamp/10);
             pop();
 
             //The ball moves down the slope, moves slower with friction
             xPos = xPos + 1 - frictionDynamic;
-            yPos = ((starty+19)/startx)*xPos - frictionDynamic / 100;
+            yPos = ((starty+19)/startx)*xPos - frictionDynamic;
         } else {
             stroke(0);
             ellipse(startx + xPos + (mass / 2.7), starty + yPos - (mass / 2.7), 30 + mass, 30 + mass);

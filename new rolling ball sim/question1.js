@@ -32,7 +32,7 @@ function closeModal(){
 
 function triggerAnimation() {
     modalContent.style.animation = 'none';
-    modalContent.offsetHeight; /* trigger reanimation */
+    modalContent.offsetHeight; //trigger reanimation
     modalContent.style.animation = null;
     return 0;
 }
@@ -70,7 +70,7 @@ function backModal(){
 function guidanceShow() {guide.style.left = "97vw";};
 function guidanceHide() {guide.style.left = "98vw"; guide.style.transitionDuration = "1s";};
 
-/*Initialisation*/
+//Initialisation
 function initGuidance(ids=[]) {
     slideIDs = ids;
     maxSlideNumber = slideIDs.length + 1;
