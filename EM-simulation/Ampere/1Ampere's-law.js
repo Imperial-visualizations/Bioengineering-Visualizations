@@ -1,8 +1,13 @@
-let currentContainer=[], arrows=[],myCanvas, countingFrames=0;
+let currentContainer=[], arrows=[], myCanvas, countingFrames=0;
 let vectorB, theta=-Math.PI/2;
 const dTheta=0.01, mu0= 4*Math.PI*Math.pow(10, -7);
-let fieldDisplay=false, playing=false, mouseWasPressed=false, wireSelected=0;
-let buttonPlay, buttonPause, buttonField, buttonReset, currentSlider,textCurrentSlider, tagCurrentSlider, tagCurrentSliderMin, tagCurrentSliderMax, diameterSlider, tagDiamSlider;
+let fieldDisplay=false, playing=false, mouseWasPressed=false, wireSelected =0;
+let buttonPlay, buttonPause, buttonField, buttonReset;
+let currentSlider,textAdviseSettings, tagCurrent, tagCurrentSlider, tagCurrentSliderMin, tagCurrentSliderMax, diameterSlider, tagDiamSlider;
+let buttonAddWire, buttonRemoveWires, currentSelectList, tagCurrentSelectList;
+
+let basicOffset = $('#buttons-holder').offset().left+5;
+
 
 /* Now the plotly part of declaration */
 let trace={x:[],y:[]}, layout, trace2={x:[],y:[]};
@@ -12,79 +17,24 @@ let B, Bdl=0, Btot, intBdl=0;
 
 function setup(){
     let width = $('#sketch-holder').width(), height = $('#sketch-holder').height();
+
+
+    $('#buttonPlay').click(buttonPlayFunction);
+    $('#buttonPause').click(buttonPauseFunction);
+    $('#buttonField').click(buttonFieldFunction);
+    $('#buttonAddWire').click(buttonAddWireFunction);
+    $('#buttonRemoveWires').click(buttonRemoveWiresFunction);
+    $('#buttonReset').click(buttonResetFunction);
+
     myCanvas = createCanvas(width, height);
     myCanvas.parent('sketch-holder');
     frameRate(60);
     //create the first current-carrying wire
     currentContainer.push(new Wire(circuit.x, circuit.y, 5,0));
-    vectorB = new Arrow(circuit.x, circuit.y-circuit.diam/2);
-    theta=-PI/2;
+    theta=-Math.PI/2;
 
-                                            //creating buttons for interraction
-    buttonPlay = createButton("Play");
-    buttonPlay.position(100, 100);
-    buttonPlay.mousePressed(function(){
-        playing = true;
-    });
+                            //creating buttons for interraction
 
-    buttonPause = createButton("Pause");
-    buttonPause.position(buttonPlay.x +buttonPlay.width+10, buttonPlay.y);
-    buttonPause.mousePressed(function(){
-        playing = false;
-        countingFrame=frameCount;
-    });
-
-    buttonField =createButton("Display Magnetic fields");
-    buttonField.position(buttonPlay.x, +buttonPlay.y+buttonPlay.height+10);
-    buttonField.mousePressed(function(){
-        fieldDisplay= !fieldDisplay;
-    });
-
-
-    //text for slider (telling them that it won't change if the animation is playing)
-    textCurrentSlider = createElement('p', "(Value of current and position of wire <br>only changes if animation is on its start position)");
-    textCurrentSlider.position(buttonPlay.x-20, buttonField.y+buttonField.height+20);
-    textCurrentSlider.style('font-size', '13px');
-
-    tagCurrentSlider = createElement('p', "Current <b>I</b>:");
-    tagCurrentSlider.position(buttonPlay.x-70, textCurrentSlider.y+textCurrentSlider.height);
-    //slider for changing current
-    currentSlider = createSlider(-10, 10, 5, 0.1);
-    currentSlider.position(buttonPlay.x, textCurrentSlider.y+textCurrentSlider.height+5);
-    currentSlider.style('width', '200px');
-    //limits of slider:
-    tagCurrentSliderMin = createElement('p', "-10A");
-    tagCurrentSliderMin.position(buttonPlay.x+10, currentSlider.y+currentSlider.height*3/4);
-    tagCurrentSliderMax = createElement('p', "10A");
-    tagCurrentSliderMax.position(currentSlider.x+currentSlider.width-30, currentSlider.y+currentSlider.height*3/4);
-
-    buttonReset= createButton("Reset");
-    buttonReset.position(currentSlider.x, currentSlider.y+currentSlider.height+10);
-    //what happens when we reset animation
-    buttonReset.mousePressed(function(){
-        playing=false;
-        theta=-PI/2;
-        for (let i=0; i<currentContainer.length; i++){
-            currentContainer[i].x=circuit.x;
-            currentContainer[i].y=circuit.y;
-        }
-
-        vectorB.x=circuit.x;
-        vectorB.y=circuit.y-circuit.diam/2;
-        this.r=[];
-        vectorB.update();
-        //reset the plot
-        args_plot_Bdl(circuit, currentContainer);
-        Plotly.react('graph-holder', [trace, trace2], layout, {displayModeBar: false});
-    });
-
-    //slider for changing diameter of circuit
-    tagDiamSlider= createElement('p', "Diameter of loop:");
-    tagDiamSlider.position(buttonReset.x-70, buttonReset.y+buttonReset.height+10);
-
-    diameterSlider = createSlider(1, 350, 150, 5);
-    diameterSlider.position(currentSlider.x, tagDiamSlider.y+tagDiamSlider.height);
-    diameterSlider.style('width', '200px');
 
     //get the first plot on the screen
     initialPlot();
@@ -96,9 +46,7 @@ let circuit = {
     x:$('#sketch-holder').width()/2,
     y: $('#sketch-holder').height()/2,
 
-
     drawCircuit() {
-        this.diam = diameterSlider.value();
         push();
         stroke(100);
         strokeWeight(1);
@@ -111,16 +59,15 @@ let circuit = {
 
     drawPath(){
         //have arc being bolder as we go on it--> from angle -PI/2 to angle
-
         push();
         strokeWeight(2);
         stroke(100, 40, 100);
         noFill();
         translate(this.x, this.y);
-        arc(0,0, this.diam, this.diam, 3*PI/2, theta);
+        arc(0,0, this.diam, this.diam, 3*Math.PI/2, theta);
         pop();
     }
-}
+};
 
 const Wire= class {
     constructor(x, y, A, index){
@@ -132,21 +79,44 @@ const Wire= class {
         this.widthInner=3;
         this.widthOuter=12;
         this.index = index;
+        this.clicked=false;
+        this.color = 0;
     }
 
+    intersect(){
+        let areintersecting = false;
+        for (let i = 0; i < currentContainer.length; i++) {
+            if(currentContainer[i]!=this){
+                if (parseInt(dist(mouseX,mouseY,currentContainer[i].x,currentContainer[i].y))<=this.widthOuter+4){
+                    areintersecting=true
+                }
+            }
+        }
+        return areintersecting;
+    }
+
+    pressed(){
+        let distance =dist(mouseX,mouseY,this.x,this.y);
+        if (distance <= this.widthOuter+4 && mouseIsPressed && !mouseWasPressed){
+            this.clicked = true;
+            mouseWasPressed=true;
+        }
+        if (this.clicked && !mouseIsPressed){
+            this.clicked = false;
+            mouseWasPressed=false;
+        }
+    }
     updateWirePos() {
-        let distance =  dist(mouseX, mouseY, this.x, this.y);
-        if (mouseIsPressed && distance<=this.widthOuter+10)
-        {mouseWasPressed= true}
-        if (mouseIsPressed && mouseWasPressed){
+        this.pressed();
+        if ((!this.intersect()) && this.clicked) {
             this.x = mouseX;
             this.y = mouseY;
-            }
-        else if (!mouseIsPressed && mouseWasPressed){mouseWasPressed=false}
+        }
     }
 
     drawWire() {
-        stroke(0);
+        push();
+        stroke(this.color);
         fill(255);
         ellipse(this.x, this.y, this.widthOuter, this.widthOuter);
         fill(0);
@@ -155,17 +125,17 @@ const Wire= class {
         if (this.valueSign>=0) {
             line(this.x - this.widthInner, this.y - this.widthInner, this.x + this.widthInner, this.y + this.widthInner);
             line(this.x + this.widthInner, this.y - this.widthInner, this.x - this.widthInner, this.y + this.widthInner);
-        }
-        else {
+        } else {
             //negative current represented by vector 3D notation (small dot in the middle)
             strokeWeight(3);
             ellipse(this.x, this.y, this.widthInner, this.widthInner);
         }
         strokeWeight(1);
         textSize(15);
-        text(`I= ${this.value}`, this.x+10, this.y+10);
-        fill(255);
-        }
+        let textI = 'I ('+this.index + ') =' + this.value;
+        text(textI, this.x+10, this.y+10);
+        pop();
+    }
 
     drawField() { //for now only works for 1 wire since we only have concentric circles
         if (fieldDisplay) {
@@ -192,29 +162,25 @@ const Wire= class {
     }
 };
 
-let  Arrow = class {
-    constructor(x, y) {
-        this.x = x;
-        this.y = y;
-        this.length = 0;
-        this.scaling = 2000;
-        this.r=[];
-    }
+vectorB= {
+    x: circuit.x,
+    y:circuit.y-circuit.diam/2,
+    length : 0,
+    scaling :2000,
+    r:[],
 
-    //method
 
-    updateAngle(){
-        //recursion of the angle
-        if (theta<=PI) {
+    updateAngle(){ //recursion of the angle
+        if (theta<=Math.PI) {
         theta+=dTheta;
         } else {
-        theta=-PI;
+        theta=-Math.PI;
         }
-        if (theta>=-PI/2-dTheta&&theta<-PI/2){
+        if (theta>=-Math.PI/2-dTheta&&theta<-Math.PI/2){
             playing=false;
-            theta=-PI/2;
+            theta=-Math.PI/2;
         }
-    }
+    },
 
     update () { //update will redraw each arrow
         //update the position as we change the angle or the diameter
@@ -230,8 +196,9 @@ let  Arrow = class {
 
         push(); //move the grid
         translate(this.x, this.y);
+
         stroke(0);
-        fill(40, 200, 40);
+        fill(40, 200, 40, 200);
         rotate(angle);
         beginShape(); //create a shape from vertices
         vertex(0, 0);
@@ -264,11 +231,16 @@ let  Arrow = class {
         text("B", (3*this.length*cos(angle)+5), (3*this.length*sin(angle)+5));
         pop(); //reset the grid!
     }
-}
+};
 
-function addWire(posX, posY){
+function addWire(){
     let index = currentContainer.length;
-    currentContainer.push(new Wire(posX, posY, Math.floor(random(200))/10-10), index);
+    if (index>5){ //maximum amount of wires we can add
+        $('#buttonAddWire').hide();
+    }
+    else {
+        currentContainer.push(new Wire(index * $('#sketch-holder').width() / 6, 20, 5, index));
+    }
 }
 
 //tool to calculate the length of a vector as an array
@@ -278,10 +250,6 @@ function vectorLength(vector) {
     return Math.sqrt(Math.pow(vector[0], 2)+Math.pow(vector[1], 2));
 }
 
-
-
-
-/* Now the plotly part */
 
 /*function to calculate the value of B at a point [x, y] */
 function calculateB(wires, x, y){
@@ -316,6 +284,7 @@ function calculateBdl(loop, B, alpha){
     return Bdl;
 }
 
+/* Now the plotly part */
 //return plotly parameters for x and y:
 function args_plot_Bdl(loop, wires){
     x=[];
@@ -348,13 +317,8 @@ function args_plot_Bdl(loop, wires){
         mode: 'lines',
         line: {color: 'green'}
     };
-
     let minRange, maxRange, min=Math.min(...trace.y), max = Math.max(...trace.y);
-            /*
             // the 3 dots allow to spread the array
-            // reference:
-            // https://codeburst.io/javascript-arrays-finding-the-minimum-maximum-sum-average-values-f02f1b0ce332
-            */
     if (min<=0&&max<=0){ //both are less than 0
         minRange = 11*min/10; //a bit smaller than the minimum value
         maxRange = -min/10; //since the minimum is negative, max
@@ -380,7 +344,6 @@ function initialPlot(){
         xaxis: {
             title: 'theta',
             range:[-0.2, 2*Math.PI+0.2],
-
             autotick: false,
             ticks: 'outside',
             tick0: 0,
@@ -402,35 +365,30 @@ function initialPlot(){
 function draw(){
     background (255);
     circuit.drawCircuit();
-
     for (let i = 0; i < currentContainer.length; i++) {
-        if (theta>=-PI/2&& theta<=-PI/2+dTheta && !playing) {
+        if (checkStartPos()) {
             countingFrames=0;
             currentContainer[i].updateWirePos();
-            currentContainer[i].value = currentSlider.value();
+            currentContainer[wireSelected].value = $('#currentSlider').val();
+
             if (currentContainer[i].value>=0) {currentContainer[i].valueSign=1}
-        else  {currentContainer[i].valueSign=-1}
+            else  {currentContainer[i].valueSign=-1}
         }
         currentContainer[i].drawWire();
         currentContainer[i].drawField();
-        //add the frames
-
     }
 
     vectorB.update(); //redraw the arrows
 
-    if (playing) {
-        vectorB.updateAngle(); //we update the position of the arrow on the circuit
-        countingFrames++;
-        trace2.x = trace.x.slice(0, countingFrames+1);
-        trace2.y = trace.y.slice(0, countingFrames+1);
-        Plotly.react('graph-holder', [trace, trace2],layout, {displayModeBar: false});
-    }
 
-
-    //when we are in pause: we recalculate the plot for plotly
-    if (theta>=-PI/2&& theta<=-PI/2+dTheta){ //we are in the start position
+    //when we are in start position: we recalculate the plot for plotly
+    if (checkStartPos()){ //we are in the start position
+        if (wireSelected !== $('#currentSelectList').val()){
+            currentSelectListChanged();
+        }
+        circuit.diam= parseFloat($('#diameterSlider').val()); //update the diameter of the loop
         //plotly parameters:
+
         let intBdl2=intBdl;
         args_plot_Bdl(circuit, currentContainer);
         if (intBdl2!==intBdl) { //we have an update of the data
@@ -438,15 +396,86 @@ function draw(){
 
             Plotly.react('graph-holder', [trace, trace2], layout, {displayModeBar: false});
         }
+    } else{ //we are not in start position
+        circuit.drawPath(); //draw the path from start position to current position
     }
-    else{ //we are not in start position
-        circuit.drawPath();
+
+    //while we play: we update the plotly graph to have the trace, we update the angle for the arrow
+    if (playing) {
+        vectorB.updateAngle(); //we update the position of the arrow on the circuit
+        countingFrames++;
+        trace2.x = trace.x.slice(0, countingFrames+1);
+        trace2.y = trace.y.slice(0, countingFrames+1);
+        Plotly.react('graph-holder', [trace, trace2],layout, {displayModeBar: false});
     }
 }
+
+//button functions:
+function buttonPlayFunction(){
+    playing = true;
+}
+function buttonPauseFunction(){
+    playing = false;
+}
+function buttonFieldFunction(){
+    fieldDisplay= !fieldDisplay;
+}
+function currentSelectListChanged(){
+    let newVal = parseFloat($('#currentSelectList').val());
+    currentContainer[wireSelected].color= 0;
+    if(newVal<currentContainer.length) {
+        wireSelected = newVal;
+    }
+    currentContainer[wireSelected].color= [50, 50, 250];
+}
+
+function buttonAddWireFunction(){
+    //only in start condition:
+    if (checkStartPos()) {
+        addWire();
+        $('#buttonRemoveWires').show();
+        if (currentContainer.length>=6){
+            $('#buttonAddWire').hide();
+        }
+    }
+}
+
+function buttonRemoveWiresFunction(){
+    if (checkStartPos()) {
+        currentContainer.splice(1, currentContainer.length-1);
+        $('#buttonRemoveWires').hide();
+        $('#buttonAddWire').show();
+    }
+}
+
+function buttonResetFunction(){
+    playing=false;
+    theta=-Math.PI/2;
+    vectorB.x=circuit.x;
+    vectorB.y=circuit.y-circuit.diam/2;
+    vectorB.update();
+    currentContainer[0].x = circuit.x;
+    currentContainer[0].y=circuit.y;
+    buttonRemoveWiresFunction(); //remove all the other wires
+    //reset the plot
+    args_plot_Bdl(circuit, currentContainer);
+    Plotly.react('graph-holder', [trace, trace2], layout, {displayModeBar: false});
+}
+
 
 //resize the canvas if the window size changes
 function windowResized() {
     let width = $('#sketch-holder').width(), height = $('#sketch-holder').height();
     resizeCanvas(width, height);
+
 }
+
+function checkStartPos(){
+    if (!playing && theta>=-Math.PI/2&& theta<=-Math.PI/2+dTheta){
+        return true;
+    }else{
+        return false;
+    }
+}
+
 
