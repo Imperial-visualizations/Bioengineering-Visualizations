@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Ramps | Mechanics</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.7.1/p5.js"></script>
+  <link rel="stylesheet" href="https://rawgit.com/Imperial-visualizations/Physics-Visualizations/master/css/skeleton.css">
+  <link rel="stylesheet" href="https://rawgit.com/Imperial-visualizations/Physics-Visualizations/master/css/style.css">
+  <link rel="stylesheet" href="question1.css">
+  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+  <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML">
+  </script>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+</head>
+
+<body>
+  <h1>Block Sliding on a Ramp - Part 2</h1>
+  <div class="container">
+    <div class="row">
+      <div class="six columns">
+        <div id="canvas" style="width:500px; height:500px;"></div>
+      </div>
+
+      <p style="position: relative; left: 50px;  text-align:justify ">
+        The following visualisation shows the same block on a ramp,<br/> however here the coeffient of friction is also variable.<br/> Using the sliders explore the way in which the motion of the block is affected.<br/> When you are ready, answer the
+        question to move on to the next section</p>
+
+      <div class="six columns">
+        <label class="sliderTitle">Static Friction:&nbsp;
+                    <span id="frictionStaticDisplay" data-unit="">1</span>
+                </label>
+        <label class="slider">
+                    <input id="frictionStatic" class="inputs" type="range" value="1" min="0" max="1" step="0.01"/>
+                </label>
+
+        <label class="sliderTitle">Inclined Angle:&nbsp;
+                    <span id="angleDisplay" data-unit="º">45º</span>
+                </label>
+        <label class="slider">
+                    <input id="angle" class="inputs" type="range" value="45" min="0" max="60" step="1"/>
+                </label>
+
+        <label class="sliderTitle">Mass:&nbsp;
+                    <span id="massDisplay" data-unit="kg">15kg</span>
+                </label>
+        <label class="slider">
+                    <input id="mass" class="inputs" type="range" value="15" min="1" max="20" step="1"/>
+                </label>
+
+        <input id="playButton" class="button-primary" type="submit" value="Play">
+
+        <div class="guide">
+          Question
+        </div>
+
+        <div class="guideModal">
+          <div class="guideTest"></div>
+
+          <div class="modalContent">
+            <p id="modal_0">
+              A block of mass m is sitting on an inclined plane.</br>
+              If the coefficient of static friction is 0.75,</br>
+              to what angle can the plane be increased before the block starts to slip?</br>
+              Tip: Draw a diagram</br>
+              <input type="checkbox" id="answer1">36.9&#176;<br>
+              <input type="checkbox" id="answer2">12.5&#176;<br>
+              <input type="checkbox" id="answer3">56.8&#176;<br>
+              <input type="checkbox" id="answer4">78.4&#176;<br>
+              <input style="position: relative; left: 120px;" id="checkButton" type="button" value="Check Answer">
+            </p>
+            <p id="modal_1" hidden>
+               Congratulations!</br>
+               Press next to move onto the next section.</br>
+               <input id="solutions" type="button" onclick="location.href='answer1.html';" value="Show Solutions">
+               <input id="nextButton" type="button" onclick="location.href='rolling3.html';" value="Next">
+           </p>
+           <p id="modal_2" hidden>
+               Not quite right.</br>
+               Have a look at the workings before moving on.</br>
+               <input id="solutions" type="button" onclick="location.href='answer1.html';" value="Show Solutions">
+               <input id="nextButton" type="button" onclick="location.href='rolling3.html';" value="Next">
+           </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  </div>
+
+  <script src="rolling.js"></script>
+  <script src="rollingP5-2.js"></script>
+  <script src="question1.js"></script>
+</body>
+
+</html>

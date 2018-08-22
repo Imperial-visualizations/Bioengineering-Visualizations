@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Ramps | Mechanics</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.7.1/p5.js"></script>
+  <link rel="stylesheet" href="https://rawgit.com/Imperial-visualizations/Physics-Visualizations/master/css/skeleton.css">
+  <link rel="stylesheet" href="https://rawgit.com/Imperial-visualizations/Physics-Visualizations/master/css/style.css">
+  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+  <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML">
+  </script>
+
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+</head>
+
+<body>
+  <h1>Block Sliding on a Ramp - Worked Solution</h1>
+  <div>
+    <image style="display: block; margin-left: auto; margin-right: auto; width: 40%" src="answer1.jpg" alt="Answer 1">
+    <div>
+      <p style="text-align: center;"> mg= mass multiplied by the acceleration due to gravity (Weight)</br>
+        N= normal contact force</br>
+        F= Frictional force</br>
+      </p>
+      <ol style="text-align: center;">
+        <li>Take x axis along slope and y axis perpendicular to slope</li>
+        <li>Resolve the weight in the x and y axis to become <b>\(mgcos(\theta)\)</b> perpendicular to the slope and <b>\(mgsin(\theta)\)</b> along the slope.</li>
+        <li>Resolve forces in the y axis: <b>\(N - mgcos(\theta) = 0\)</b> (as the mass is not accelerating in the y axis), therefore <b>\(N = mgcos(\theta)\)</b>.</li>
+        <li>Resolve forces in the x axis: <b>\(mgsin(\theta) - F = 0\)</b> (as the block is in equilibrium and is about to slip so no acceleration). Therefore <b>\(F = mgsin(\theta)\)</b></li>
+        <li>Apply Coulombs Law (\(F=(\mu)N\)) so that \((\mu)N = mgsin(\theta)\).</li>
+        <li>Substitute in \(N\) into the equation in 5. so that \((\mu)mgcos(\theta) = mgsin(\theta)\).</li>
+        <li>Cancel out the \(mg\) terms on both sides so \((\mu)cos(\theta) = sin(\theta)\).</li>
+        <li>Divide through by \(cos(\theta)\) so \((\mu)= tan(\theta)\).</li>
+        <li>The question is asking for the maximum angle and \(\mu\) is given so rearranging gives: \((\theta) = tan^-1(\mu)\)</li>
+    </ol>
+
+    <p style="text-align: center;">
+      As the \(\mu\) given for steel is 0.75, substituting that value into the equation gives a maximum angle \(\theta\) = 36.9\(\circ\).
+    </p>
+    </div>
+
+  </div>
+
+
+</body>
+
+</html>
