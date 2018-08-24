@@ -8,7 +8,7 @@
 
     <!--p5-->
     <script src="libraries/p5.min.js"></script>
-    <script src="libraries/addons/p5.dom.min.js"></script>
+    <!--<script src="libraries/addons/p5.dom.min.js"></script>-->
     <script src="libraries/addons/p5.sound.min.js"></script>
 
     <!--Plotly-->
@@ -43,47 +43,50 @@
 </head>
 
 <body>
-<!--<div class="rightnav">▶ </div> -->
 <div class="container">
-    <div id ='buttons-holder' class="four columns" style="position:absolute; left:0">
-        <button id="buttonReset" style="position: absolute; left: 50px; top: 50px;">Reset</button>
-        <button id="buttonPlay" style="position: absolute; left:5px ; top:98px">Play</button>
-        <button id="buttonPause" style="position: absolute; left: 110px; top: 98px">Pause</button>
-        <button id="buttonField" style="position: absolute; left: 5px; top: 140px;">Display Magnetic fields</button>
-        <p id="tagSettings" style="position:absolute; left:-20px ; top:200px; font-size:15px;"><b>Settings:</b></p>
-        <p id="textAdviseSettings" style="position: absolute; left: -10px; top: 225px; font-size: 13px;">(Settings can only be modified<br>when animation is on its start position)</p>
-        <div id="Current-modifiers">
-            <p id="tagCurrent" style="position: absolute; left: -5px; top: 280px;">Wire Selected:  <b><span id="wireSelected" style="color:blue;"></span></b></p>
-            <!--<p id="tagCurrentSelectList" style="position: absolute; left: -5px; top: 238px;">Select current<br>carrying wire:</p>-->
-            <!--<select id="currentSelectList" style="position: absolute; left: 111px; top: 238px;">-->
-                <!--<option value="0">0</option>-->
-                <!--<option value="1">1</option>-->
-                <!--<option value="2">2</option>-->
-                <!--<option value="3">3</option>-->
-                <!--<option value="4">4</option>-->
-                <!--<option value="5">5</option>-->
-            <!--</select>-->
-            <p id="tagCurrentSlider" style="position: absolute; left: -5px; top: 320px;">Value <b>I</b>:  <b><span id="currentValue" style="color:darkred;"></span></b> Amps</p>
-            <input id="currentSlider"  type="range" min="-10" max="10" step="0.1" value="5" style="position: absolute; left: 5px; top: 330px; width: 200px;">
-            <p id="tagCurrentSliderMin" style="position: absolute; left: 10px; top: 355px;">-10A</p>
-            <p id="tagCurrentSliderMax" style="position: absolute; left: 180px; top: 355px;">10A</p>
+    <div id ='buttons-holder' class="three columns" style="position:absolute; left:0; top:15vh;">
+        <button id="buttonReset" >Reset</button>
+        <br>
+        <button id="buttonPlay" >Play</button>
+        <button id="buttonPause" >Pause</button>
+        <button id="buttonField" >Display Magnetic fields</button>
+        <br><br>
+        <p style="font-size:15px;"><b>Settings:</b><br>
+        <span style="font-size: 13px;">(Settings can only be modified<br>when animation is on its start position)</span></p>
+        <div id="diameter-modifiers">
+            <label class="sliderTitle">Diameter of loop:</label>
+            <label class="slider">
+                <input id="diameterSlider" type="range" min="1" max="350" step="5">
+            </label>
         </div>
 
-        <p id=tagDiamSlider" style="position: absolute; left: -45px; top: 387px;">Diameter of loop:</p>
-        <input id="diameterSlider" type="range" min="1" max="350" step="5" style="position: absolute; left: 5px; top: 411px; width: 200px;">
-        <button id="buttonAddWire" style="position: absolute; left: 5px; top: 475px;">Add current wire</button>
-        <button id="buttonRemoveWires" style="position: absolute; left: 5px; top: 523px; display: block;">Remove Wires</button>
+        <div id="Current-modifiers">
+            <p>Wire Selected:  <b><span id="wireSelected" style="color:blue;"></span></b></p>
+            <button id="buttonAddWire" >Add current wire</button>
+            <br>
+            <button id="buttonRemoveWires" >Remove Wires</button>
+            <br>
+            <label for="currentSlider"class = "sliderTitle" id="tagCurrentSlider">Value I:
+                <b><span id="currentDynamicDisplay" data-unit="Amps">5</span></b>
+            </label>
+            <label class="slider">
+                <input id="currentSlider" name="currentSlider"  type="range" min="-10" max="10" step="0.1" value="5">
+                <span class="sliderMin" style="font-size:14px">-10A</span><span class="sliderMax" style="font-size:14px">10A</span>
+            </label>
 
+        </div>
     </div>
 
-    <div id="sketch-holder" style="position: absolute; right: 0; width: 65%; height: 60vh">
+    <div id="graphics-holder" class="nine columns">
+        <div id="sketch-holder" style="position: absolute;right: 0; width: 65%; height: 55vh">
+        </div>
+        <div id="graph-holder" style="position:absolute; right:20vh; top:65vh; width:43%; height:37vh"></div>
+
+        <div id="B-dl-text-holder" style="position:absolute; right:0; top:80vh; width:16%; height:30vh">
+          <p> $\displaystyle\oint\mathbf{B.dl}=$ <span id='Bdl-text'></span> </p>
+       </div>
     </div>
-    <div id="graph-holder" style="position:absolute; right:20vh; top:65vh; width:43%; height:37vh"></div>
-
-    <div id="B-dl-text-holder" style="position:absolute; right:0; top:80vh; width:16%; height:30vh">
-      <p> $\displaystyle\oint\mathbf{B.dl}=$ <span id='Bdl-text'></span> </p>
-
-   </div>
+</div>
 
 
 <!-- my own script-->

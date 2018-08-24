@@ -20,7 +20,6 @@ function setup(){
     $('#buttonAddWire').click(buttonAddWireFunction);
     $('#buttonRemoveWires').click(buttonRemoveWiresFunction);
     $('#buttonReset').click(buttonResetFunction);
-    // $('#currentSelectList').change(currentSelectListChanged);
 
     myCanvas = createCanvas(width, height);
     myCanvas.parent('sketch-holder');
@@ -365,13 +364,12 @@ function initialPlot(){
     Plotly.newPlot('graph-holder', [trace, trace2], layout, {displayModeBar:false});
 }
 
-function updateValues() {
-
-}
 
 //button functions:
 function buttonPlayFunction(){
     playing = true;
+    $('#Current-modifiers, #diameter-modifiers').hide();
+
 }
 function buttonPauseFunction(){
     playing = false;
@@ -379,28 +377,7 @@ function buttonPauseFunction(){
 function buttonFieldFunction(){
     fieldDisplay= !fieldDisplay;
 }
-// function currentSelectListChanged(){
-//     let newVal = parseFloat($('#currentSelectList').val());
-//     if(newVal<currentContainer.length) {
-//         wireSelected = newVal;
-//         $('#currentSlider').val(currentContainer[wireSelected].value.toString());
-//     }
-//     else{
-//         $('#currentSelectList').val(wireSelected.toString());
-//     }
-// }
 
-// function currentSelectListDisplay(){
-//     let currentLength = currentContainer.length-1;
-//     for (i=0; i<=5; i++){
-//         if (i>currentLength){
-//             $('#currentSelectList option[value='+i.toString()+']').hide();
-//         }
-//         else{
-//             $('#currentSelectList option[value='+i.toString()+']').show();
-//         }
-//     }
-// }
 
 function buttonAddWireFunction(){
     //only in start condition:
@@ -420,8 +397,6 @@ function buttonRemoveWiresFunction(){
         $('#buttonRemoveWires').hide();
         $('#buttonAddWire').show();
         wireSelected = 0;
-        // $('#currentSelectList').val(wireSelected.toString());
-
     }
 }
 
@@ -437,6 +412,8 @@ function buttonResetFunction(){
     //reset the plot
     args_plot_Bdl(circuit, currentContainer);
     Plotly.react('graph-holder', [trace, trace2], layout, {displayModeBar: false});
+    $('#Current-modifiers, #diameter-modifiers').show();
+
 }
 
 function checkStartPos(){
@@ -451,8 +428,11 @@ function checkStartPos(){
 function windowResized() {
     let width = $('#sketch-holder').width(), height = $('#sketch-holder').height();
     resizeCanvas(width, height);
-
 }
+//same for plotly
+window.onresize = function() {
+    Plotly.Plots.resize(gd);
+};
 
 function mouseShape(){
     if (checkStartPos()) { //we are in the start position
@@ -478,7 +458,7 @@ function updateValuesFromSlider(){
     } else {
         currentContainer[wireSelected].valueSign = -1;
     }
-    $('#currentValue').html(val.toString().slice(0, 3));
+    $('#currentDynamicDisplay').html(val.toString().slice(0, 3)+" Amps");
 
     circuit.diam = parseFloat($('#diameterSlider').val()); //update the diameter of the loop
 }
@@ -531,84 +511,8 @@ function draw(){
         trace2.x = trace.x.slice(0, countingFrames + 1);
         trace2.y = trace.y.slice(0, countingFrames + 1);
         Plotly.react('graph-holder', [trace, trace2], layout, {displayModeBar: false});
+        if (!playing){ //the precedent update set playing to false
+            $('#Current-modifiers, #diameter-modifiers').show();
+        }
     }
 }
-
-
-
-// function tryFindCentre(){
-//     /*will return and draw a cross in the location of the "centre of current"
-//      with value of magnetic field at that point */
-//     let posX=0, posY=0, totalCurrent=0;
-//
-//     for (let i=0; i<currentContainer.length; i++){
-//         let current = parseFloat(currentContainer[i].value);
-//         totalCurrent+=current;
-//         posX += current*parseFloat(currentContainer[i].x);
-//         posY+= current*parseFloat(currentContainer[i].y);
-//     }
-//     if (totalCurrent !==0) {
-//         posX = posX / totalCurrent;
-//         posY = posY / totalCurrent;
-//
-//         push();
-//         stroke('red');
-//         translate(posX, posY);
-//         line(-5, -5, 5, 5);
-//         line(-5, 5, 5, -5);
-//         let Bfield = vectorLength(calculateB(currentContainer, posX, posY)).toString();
-//         let BF = Bfield.slice(0, 4);
-//         text('B=' + BF, 10, 10);
-//         pop();
-//         return [posX, posY];
-//     }
-// }
-//
-// function tryFindMinIfExists(){
-//     let posXPos=0, posYPos=0, totalCurrentPos=0, posXNeg=0, posYNeg=0, totalCurrentNeg=0, posX, posY;
-//
-//     for (let i=0; i<currentContainer.length; i++){
-//         let current = parseFloat(currentContainer[i].value);
-//         if (current>=0) {
-//             totalCurrentPos += current;
-//             posXPos += current * parseFloat(currentContainer[i].x);
-//             posYPos += current * parseFloat(currentContainer[i].y);
-//         }
-//         else {
-//             totalCurrentNeg += current;
-//             posXNeg += current * parseFloat(currentContainer[i].x);
-//             posYNeg += current * parseFloat(currentContainer[i].y);
-//         }
-//     }
-//         if (totalCurrentPos !==0) {
-//             posXPos = posXPos / totalCurrentPos;
-//             posYPos = posYPos / totalCurrentPos;
-//         }
-//         else {
-//             posXPos = posXNeg/totalCurrentNeg;
-//             posYPos = posXNeg/totalCurrentNeg;
-//         }
-//         if (totalCurrentNeg !==0) {
-//             posXNeg = posXNeg / totalCurrentNeg;
-//             posYNeg = posYNeg / totalCurrentNeg;
-//         }
-//         else {
-//             posXNeg = posXPos / totalCurrentPos;
-//             posYNeg = posYPos / totalCurrentPos;
-//         }
-//         posX = (posXPos + posXNeg) / 2 ;
-//         posY = (posYPos + posYNeg) / 2 ;
-//
-//         push();
-//         stroke('yellow');
-//         translate(posX, posY);
-//         line(-5, -5, 5, 5);
-//         line(-5, 5, 5, -5);
-//         let Bfield = calculateB(currentContainer, posX, posY).toString();
-//         let BF = Bfield.slice(0, 4);
-//         text('B=' + BF, 10, 10);
-//         console.log('Centers: '+posX +' '+ posY);
-//         pop();
-//         return [[posXPos, posYPos], [posXNeg, posYNeg]];
-// }
-
