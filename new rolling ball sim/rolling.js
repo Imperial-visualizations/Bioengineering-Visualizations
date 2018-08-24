@@ -14,10 +14,18 @@ function init() {
 }
 
 function main() {
+
     $("input[type=range]").each(function () {
         /*Allows for live update for display values*/
         $(this).on('input', function(){
             $("#"+$(this).attr("id") + "Display").text( $(this).val() + $("#"+$(this).attr("id") + "Display").attr("data-unit") );
+            let mass = parseFloat($("#mass").val());
+            let angleRamp = parseFloat($("#angle").val());
+            let frictionStatic = parseFloat($("#frictionStatic").val());
+            $('#weightCos').html(-Math.round(mass*9.81*Math.cos(angleRamp*(PI/180))*100)/100);
+            $('#weightSin').html(Math.round(mass*9.81*Math.sin(angleRamp*(PI/180))*100)/100);
+            $('#normal').html(Math.round(mass*9.81*Math.cos(angleRamp*(PI/180))*100)/100);
+            $('#friction').html(Math.round(frictionStatic*mass*9.81*Math.cos(angleRamp*(PI/180))*100)/100);
         });
     });
 
@@ -53,6 +61,8 @@ function main() {
         }
       }
     });
+
+
 
     init();
     initGuidance(["question1"]);
