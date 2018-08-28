@@ -21,27 +21,34 @@
             <div class="six columns">
                 <div id="canvas" style="width:500px; height:500px;"></div>
             </div>
+						<p style="position: relative; left: 50px;  text-align:justify ">
+			        The following visualisation shows a ball on a ramp,<br/>
+			        with a variable coefficient of dynamic friction. Once the object</br>
+							starts moving the static friction becomes 0 and the dynamic friction</br>
+							becomes the main frictional force. The dynamic friction arises due to the</br>
+							physical movement of the surfaces against each other. It can have different value</br>
+							depending on the surfaces involved. </p>
 
             <div class="six columns">
                 <label class="sliderTitle">Static Friction:&nbsp;
-                    <span id="frictionStaticDisplay" data-unit="">1</span>
+                    <span id="frictionStaticDisplay" data-unit="">0</span>
                 </label>
                 <label class="slider">
-                    <input id="frictionStatic" class="inputs" type="range" value="1" min="0" max="1" step="0.01"/>
+                    <input id="frictionStatic" class="inputs" type="range" value="0" min="0" max="1" step="0.01"/>
                 </label>
 
                 <label class="sliderTitle">Dynamic Friction:&nbsp;
-                    <span id="frictionDynamicDisplay" data-unit="">1</span>
+                    <span id="frictionDynamicDisplay" data-unit="">0</span>
                 </label>
                 <label class="slider">
-                    <input id="frictionDynamic" class="inputs" type="range" value="1" min="0" max="1" step="0.01"/>
+                    <input id="frictionDynamic" class="inputs" type="range" value="0" min="0" max="1" step="0.01"/>
                 </label>
 
                 <label class="sliderTitle">Inclined Angle:&nbsp;
-                    <span id="angleDisplay" data-unit="º">45º</span>
+                    <span id="angleDisplay" data-unit="º">40º</span>
                 </label>
                 <label class="slider">
-                    <input id="angle" class="inputs" type="range" value="45" min="0" max="60" step="1"/>
+                    <input id="angle" class="inputs" type="range" value="40" min="10" max="45" step="1"/>
                 </label>
 
                 <label class="sliderTitle">Mass:&nbsp;
@@ -52,13 +59,13 @@
                 </label>
 
                 <input id="playButton" class="button-primary" type="submit" value="Play">
-                <input id="forceButton" type="button" value="Show Forces">
+                
             </div>
         </div>
     </div>
 
     <script src="rolling.js"></script>
-    <script src="rollingP5-4.js"></script>
+    <script src="rollingP5-2.js"></script>
 </body>
 
 </html>

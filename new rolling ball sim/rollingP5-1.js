@@ -54,14 +54,9 @@ function resetSketch() {
     line(-270, -270*tan(angleRamp), -280, -270*tan(angleRamp));
     line(-270, 0, -280, 0);
     line(-260, 0, -280, 0);
+    fill(0);
+    text('h', -300, (-270*tan(angleRamp))/2 )
 
-    //Axis
-    line(0, -250, 0, -200);
-    line(0, -200, 50, -200);
-    line(-10, -240, 0, -250);
-    line(10, -240, 0, -250);
-    line(40, -190, 50, -200);
-    line(40, -210, 50, -200);
 
     //Angle
     noFill();
@@ -73,6 +68,7 @@ function resetSketch() {
     arrowReaction();
     arrowFriction();
     arrow();
+    axis();
     if(angleRamp===45){
     rotate(-angleRamp);
     weightUnresolved();
@@ -195,4 +191,20 @@ function weightUnresolved() {
   endShape(CLOSE);
   pop();
 
+}
+
+function axis() {
+  stroke(125);
+  push();
+  translate(-100, 50);
+  line(0, -250, 0, -200);
+  line(0, -200, 50, -200);
+  line(-10, -240, 0, -250);
+  line(10, -240, 0, -250);
+  line(40, -190, 50, -200);
+  line(40, -210, 50, -200);
+  fill(0);
+  text('y', -20, -250);
+  text('x', 50, -180);
+  pop();
 }
