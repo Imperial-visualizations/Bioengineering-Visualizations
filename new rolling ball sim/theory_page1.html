@@ -4,7 +4,9 @@
 	<meta charset="UTF-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="https://manglekuo.com/i-v/styles.css?v=2">
+	<link rel="stylesheet" href="https://rawgit.com/Imperial-visualizations/Physics-Visualizations/master/css/skeleton.css">
+ <link rel="stylesheet" href="https://rawgit.com/Imperial-visualizations/Physics-Visualizations/master/css/style.css">
+ <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
 </head>
 
 
@@ -14,20 +16,20 @@
 	 		<h3>Steps to take</h3>
 			<ol>
 	 			<li>	First decide which axis you would like to resolve the forces in. In the case of the slope it is almost always better to take the x axis along the slope and the y axis is perpendicular to the slope because the movement of the mass will be in this axis.</li>
-	 			<li>	To resolve the weight of the mass perpendicular to the slope use: mgcosA Where m is the mass of the object, g is the acceleration due to gravity (9.81 ms <sup>-2</sup>) and A is the angle the slope makes to the horizontal.</li>
+	 			<li>	To resolve the weight of the mass perpendicular to the slope use: \(mgcos(\theta)\) Where m is the mass of the object, g is the acceleration due to gravity (9.81 ms <sup>-2</sup>) and A is the angle the slope makes to the horizontal.</li>
 	 			<li>	To resolve the weight of the mass parallel to the slope use mgsinA with all the symbols representing the same quantities as in 2.) </li>
-	 			<li>	Then take an arbitrary direction along the axis of the slope and use Newtons second law (F=ma) to determine the acceleration of the mass along the slope. This could be combined with the equations of motion to determine the final velocity of the object given that the acceleration is constant.</li>
+	 			<li>	Then take an arbitrary direction along the axis of the slope and use Newtons second law (\(F=ma\)) to determine the acceleration of the mass along the slope. This could be combined with the equations of motion to determine the final velocity of the object given that the acceleration is constant.</li>
 			</ol>
 
 
 		<h2>Static friction</h2>
 			<p>If a mass is resting on a slope, due to the component of the weight acting at the angle of the slope, the mass would want to slide or roll down the slope however it stays in position. From Newtons first law as the object is in equilibrium, there must be balanced forces acting on the object which means there must be a force opposing the component of the weight. This is the static frictional force. It arises due to the fact that the surfaces of both the object and the slope are both in contact with each other but not in motion.</p>
-			<p>To calculate the static frictional force we use: F=muN where N is the normal contact force that can be found by resolving the forces perpendicular to the slope where the component of the weight acting perpendicular to the slope is equal to the normal contact force because in the axis perpendicular to the slope, there is no resultant force which can only mean that the forces are balanced so the normal contact force must equal the component of the weight perpendicular to the slope.</p>
-			<p>The mu represents the frictional coefficient which is a property of a material that is fixed for it. It can only range from 0 which would represent no frictional force (as F in F=muN would be equal to 0) to 1 which would be maximal friction.</p>
+			<p>To calculate the static frictional force we use: \(F=(\mu)N\) where N is the normal contact force that can be found by resolving the forces perpendicular to the slope where the component of the weight acting perpendicular to the slope is equal to the normal contact force because in the axis perpendicular to the slope, there is no resultant force which can only mean that the forces are balanced so the normal contact force must equal the component of the weight perpendicular to the slope.</p>
+			<p>The \(\mu\) represents the frictional coefficient which is a property of a material that is fixed for it. It can only range from 0 which would represent no frictional force (as F in \(F=(\mu)N\) would be equal to 0) to 1 which would be maximal friction.</p>
 			<p>The main use of the Static frictional force in calculations is to show that an object will not simply start rolling or sliding down any slope but that there is a threshold for the frictional force which must be overcome in order for there to be a resultant force which, due to Newtons second Law, will cause an acceleration.</p>
 
       <input id="nextButton" type="button" onclick="location.href='rolling1.html';" value="Next">
-
+<script src="https://rawgit.com/Imperial-visualizations/Physics-Visualizations/master/css/navigator.js"></script>
 	</body>
 
 	<script src="libraries/p5.js"></script>
@@ -47,6 +49,4 @@
 	</style>
 
 
-<body>
-</body>
 </html>

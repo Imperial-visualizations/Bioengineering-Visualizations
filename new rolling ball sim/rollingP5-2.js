@@ -1,6 +1,8 @@
 let frictionStatic, frictionDynamic, angleRamp, mass;
 let starty, startx;
 let yPos = 0, xPos = 0, angle = 0;
+let yPos1 = -270
+let xPos1 = -230;
 let canvas;
 
 
@@ -39,45 +41,18 @@ function resetSketch() {
     line(-270, -270*tan(angleRamp), -280, -270*tan(angleRamp));
     line(-270, 0, -280, 0);
     line(-260, 0, -280, 0);
-
-    //Axis
-    line(0, -250, 0, -200);
-    line(0, -200, 50, -200);
-    line(-10, -240, 0, -250);
-    line(10, -240, 0, -250);
-    line(40, -190, 50, -200);
-    line(40, -210, 50, -200);
+    text('h', -300, (-270*tan(angleRamp))/2 )
 
     //Angle
     noFill();
     arc(-3, 0, 70, 70, -180, 180+angleRamp);
 
-    /*if(isShown){
-        fill(255, 0, 0);
-        text("Normal Force", 130, 60);
-        fill(0, 255, 0);
-        text("Weight", 95, 150);
-        fill(0, 0, 255);
-        text("Friction", 20, 40);
+    push();
+    rotate(angleRamp);
+    axis();
+    pop();
 
-        //Reaction
-        stroke(255, 0, 0)
-        line(134 + (mass / 5), 30 - (mass / 5), 70, 90);
-        line(134 + (mass / 5), 30 - (mass / 5), 120, 30);
-        line(134 + (mass / 5), 30 - (mass / 5), 135, 45);
 
-        //Weight
-        stroke(0, 255, 0);
-        line(80, 80, 80, 150 + (mass / 5));
-        line(70, 140, 80, 150 + (mass / 5));
-        line(90, 140, 80, 150 + (mass / 5));
-
-        //Friction
-        stroke(0, 0, 255);
-        line(70, 90, 40 - (frictionStatic / 5), 60 - (frictionStatic / 5));
-        line(40, 80, 40 - (frictionStatic / 5), 60 - (frictionStatic / 5));
-        line(60, 60, 40 - (frictionStatic / 5), 60 - (frictionStatic / 5));
-    }*/
 }
 
 function updateValues() {
@@ -116,17 +91,38 @@ function draw() {
             xPos = xPos + 1 - frictionDynamic;
             yPos = ((starty+19)/startx)*xPos - frictionDynamic;
         } else {
+
             stroke(0);
-            ellipse(startx + xPos + (mass / 2.7), starty + yPos - (mass / 2.7), 30 + mass, 30 + mass);
+            ellipse(startx + xPos + (mass / 2.7),starty +  yPos - (mass / 2.7), 30 + mass, 30 + mass);
             rectMode(CENTER);
             fill(0, 110, 175);
-            rect(startx + xPos + (mass / 2.7), starty + yPos - (mass / 2.7), 5, 30 + mass);
-            xPos = xPos + 2 - (frictionDynamic / 50);
-            yPos = yPos + 2 - (frictionDynamic / 50);
+            rect(startx+ xPos + (mass / 2.7),starty+  yPos - (mass / 2.7), 5, 30 + mass);
+            yPos = ((starty+19)/startx)*xPos - frictionDynamic;
+            xPos = xPos + 1 - frictionDynamic;
+
+            if(xPos >= 230) {
+              xPos=230;
+            }
         }
     } else {
         yPos = 0;
         xPos = 0;
 
     }
+}
+
+function axis() {
+  stroke(125);
+  push();
+  translate(-100, 50);
+  line(0, -250, 0, -200);
+  line(0, -200, 50, -200);
+  line(-10, -240, 0, -250);
+  line(10, -240, 0, -250);
+  line(40, -190, 50, -200);
+  line(40, -210, 50, -200);
+  fill(0);
+  text('y', -20, -250);
+  text('x', 50, -180);
+  pop();
 }

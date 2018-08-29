@@ -15,7 +15,7 @@
 </head>
 
 <body>
-  <h1>Block Sliding on a Ramp</h1>
+  <h1>Toppling</h1>
   <div class="container">
     <div class="row">
       <div class="six columns">
@@ -23,25 +23,21 @@
       </div>
 
       <p style="position: relative; left: 50px;  text-align:justify ">
-        The following visualisation shows a block on a ramp,<br/>
-        Starting with a small angle and a fixed mass, press play, then slowly start<br/>
-        to raise the angle. At which point does the block start to slide?<br/>
-        (At 45&#176;, you will be able to see the unresolved weight.)<br/>
-        When you are ready, answer the question to move on to the next section</p>
+        In this visualization, the block is not considered a point mass but instead has a </br>
+        center of mass. Starting at a low angle, press play and then slowly raise the angle.</br>
+        The plumb line represents the line of action through which the weight acts.</br>
+        At which point does the block topple?</br>
+        How would you make the block more stable?</br>
+      </p>
 
       <div class="six columns">
-        <label class="sliderTitle">Static Friction:&nbsp;
-                    <span id="frictionStaticDisplay" data-unit="">0</span>
-                </label>
-        <label class="slidr">
-                    <input id="frictionStatic" class="inputs" type="range" value="0" min="0" max="1" step="0.01"/>
-                </label>
+
 
         <label class="sliderTitle">Inclined Angle:&nbsp;
-                    <span id="angleDisplay" data-unit="º">45º</span>
+                    <span id="angleDisplay" data-unit="º">35º</span>
                 </label>
         <label class="slider">
-                    <input id="angle" class="inputs" type="range" value="45" min="0" max="60" step="1"/>
+                    <input id="angle" class="inputs" type="range" value="35" min="35" max="54" step="1"/>
                 </label>
 
         <label class="sliderTitle">Mass:&nbsp;
@@ -62,26 +58,30 @@
 
           <div class="modalContent">
             <p id="modal_0">
-              A block of mass m is sitting on an inclined plane.</br>
-              If the coefficient of static friction is 0.75,</br>
-              to what angle can the plane be increased before the block starts to slip?</br>
-              Tip: Draw a diagram</br>
-              <input type="checkbox" id="answer1">36.9&#176;<br>
-              <input type="checkbox" id="answer2">12.5&#176;<br>
-              <input type="checkbox" id="answer3">56.8&#176;<br>
-              <input type="checkbox" id="answer4">78.4&#176;<br>
+              A rectangular block with a square base of side 10cm</br>
+              rests on a rough horizontal surface. A slowly increasing horizontal force is applied to one vertical face.</br>
+              If this force is applied near the bottom of the face then</br>
+              as the force increases the block will slide before it topples. If the force is applied near</br>
+              the top then the block topples over before it starts to slide. When the force is applied</br>
+              20cm from the bottom, the block sometimes slides and sometimes topples.</br>
+              Find the coefficient of friction between the block and the surface (to 2 significant figures).</br>
+              <input type="checkbox" id="answer1">Answer 1<br>
+              <input type="checkbox" id="answer2">Answer 2<br>
+              <input type="checkbox" id="answer3">Answer 3<br>
+              <input type="checkbox" id="answer4">Answer 4<br>
               <input style="position: relative; left: 120px;" id="checkButton" type="button" value="Check Answer">
             </p>
             <p id="modal_1" hidden>
               Congratulations!</br>
               Press next to move onto the next section.</br>
-              <input id="nextButton" type="button" onclick="location.href='toppling.html';" value="Next">
+              <input id="solutions" type="button" onclick="location.href='answer2.html';" value="Show Solutions">
+              <input id="nextButton" type="button" onclick="location.href='rolling2.html';" value="Next">
             </p>
             <p id="modal_2" hidden>
               Not quite right.</br>
               Have a look at the workings before moving on.</br>
-              <input id="solutions" type="button" onclick="location.href='answer1.html';" value="Show Solutions">
-              <input id="nextButton" type="button" onclick="location.href='toppling.html';" value="Next">
+              <input id="solutions" type="button" onclick="location.href='answer2.html';" value="Show Solutions">
+              <input id="nextButton" type="button" onclick="location.href='rolling2.html';" value="Next">
             </p>
           </div>
 
@@ -110,7 +110,7 @@
 
 
   <script src="rolling.js"></script>
-  <script src="rollingP5-1.js"></script>
+  <script src="toppling-P5.js"></script>
   <script src="question1.js"></script>
 </body>
 

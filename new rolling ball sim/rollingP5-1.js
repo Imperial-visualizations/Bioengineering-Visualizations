@@ -1,8 +1,10 @@
 let frictionStatic, frictionDynamic, angleRamp, mass;
-let forwardForce, reaction, friction;
+let forwardForce, reaction, friction, weight;
 let starty, startx;
-let yPos = 0, xPos = 0, angle = 0, time=0;
+let yPos = 0, xPos = 0, angle = 0, time=0, time1=0;
+let equation1, equation2;
 let canvas;
+let img;
 
 function setup() {
     canvas = createCanvas(500, 500);
@@ -10,14 +12,20 @@ function setup() {
     angleMode(DEGREES);
     resetSketch();
 
+    //Question
+    img = loadImage("question1.jpg");
+
 }
 
 function resetSketch() {
     updateValues();
 
     forwardForce=(mass*9.81*sin(angleRamp));
+    weightCos=(mass*9.81*cos(angleRamp));
     reaction = mass*9.81*cos(angleRamp);
-    friction = 0.5*reaction;
+    friction = frictionStatic*reaction;
+    weight=mass*9.81;
+
 
     translate(350, 320);
     starty = -270*tan(angleRamp)-15+(angleRamp/3);
@@ -36,7 +44,7 @@ function resetSketch() {
 
     // Ramp
     noFill();
-    line(-250, -270*tan(angleRamp), 0, 0);
+    line(-262, -270*tan(angleRamp), 4, 0);
     stroke('grey');
     line(0, 0, -100, 0);
 
@@ -46,14 +54,9 @@ function resetSketch() {
     line(-270, -270*tan(angleRamp), -280, -270*tan(angleRamp));
     line(-270, 0, -280, 0);
     line(-260, 0, -280, 0);
+    fill(0);
+    text('h', -300, (-270*tan(angleRamp))/2 )
 
-    //Axis
-    line(0, -250, 0, -200);
-    line(0, -200, 50, -200);
-    line(-10, -240, 0, -250);
-    line(10, -240, 0, -250);
-    line(40, -190, 50, -200);
-    line(40, -210, 50, -200);
 
     //Angle
     noFill();
@@ -65,12 +68,21 @@ function resetSketch() {
     arrowReaction();
     arrowFriction();
     arrow();
+    axis();
+    if(angleRamp===45){
+    rotate(-angleRamp);
+    weightUnresolved();
+  }
     pop();
+
+
+
 
 }
 
 function updateValues() {
     mass = parseFloat($("#mass").val());
+    frictionStatic = parseFloat($("#frictionStatic").val());
     angleRamp = parseFloat($("#angle").val());
 }
 
@@ -81,10 +93,12 @@ function draw() {
 
     starty = -270*tan(angleRamp)-15+(angleRamp/3);
     startx = -230;
-    friction = 0.5*reaction;
+    friction = frictionStatic*reaction;
     reaction = mass*9.81*cos(angleRamp);
     forwardForce=(mass*9.81*sin(angleRamp));
+    weight=mass*9.81;
 
+    //Block sliding
     push();
     rectMode(CENTER);
     rotate(angleRamp-0.3);
@@ -104,6 +118,9 @@ function draw() {
     if(xPos >=230) {
       xPos=230;
     }
+
+
+
 }
 function arrowReaction() {
   fill('red');
@@ -121,30 +138,73 @@ function arrowReaction() {
 }
 
 function arrowFriction() {
+   push();
     fill('blue');
     stroke('blue');
+    rotate(-90);
+    translate(245, -200);
     beginShape();
-    vertex(-240, -5);
-    vertex(-320-friction, -5);
-    vertex(-320-friction, 5);
-    vertex(-340-friction,-10);
-    vertex(-320-friction, -25);
-    vertex(-320-friction, -15);
-    vertex(-240, -15);
+    vertex(-235, -5);
+    vertex(-245, -5);
+    vertex(-245, -70-friction);
+    vertex(-255, -70-friction);
+    vertex(-240, -90-friction);
+    vertex(-225, -70-friction);
+    vertex(-235, -70-friction);
     endShape(CLOSE);
+    pop();
 
 }
 
 function arrow() {
   fill('green');
   stroke('green');
+  push();
+  rotate(90);
+  translate(235, 245);
   beginShape();
-  vertex(-240, -5);
-  vertex(-180+forwardForce, -5);
-  vertex(-180+forwardForce, 5);
-  vertex(-160+forwardForce, -10);
-  vertex(-180+forwardForce, -25);
-  vertex(-180+forwardForce, -15);
-  vertex(-240, -15);
+  vertex(-235, -5);
+  vertex(-245, -5);
+  vertex(-245, -70-forwardForce);
+  vertex(-255, -70-forwardForce);
+  vertex(-240, -90-forwardForce);
+  vertex(-225, -70-forwardForce);
+  vertex(-235, -70-forwardForce);
   endShape(CLOSE);
+  pop();
+}
+
+function weightUnresolved() {
+  fill(255,0,0,63);
+  noStroke();
+  push();
+  translate(-350, -320);
+  beginShape();
+  translate(0, -270*tan(angleRamp));
+  vertex(185, 410);
+  vertex(185, 510+weight);
+  vertex(175, 510+weight);
+  vertex(190, 530+weight);
+  vertex(205, 510+weight);
+  vertex(195, 510+weight);
+  vertex(195, 410);
+  endShape(CLOSE);
+  pop();
+
+}
+
+function axis() {
+  stroke(125);
+  push();
+  translate(-100, 50);
+  line(0, -250, 0, -200);
+  line(0, -200, 50, -200);
+  line(-10, -240, 0, -250);
+  line(10, -240, 0, -250);
+  line(40, -190, 50, -200);
+  line(40, -210, 50, -200);
+  fill(0);
+  text('y', -20, -250);
+  text('x', 50, -180);
+  pop();
 }
