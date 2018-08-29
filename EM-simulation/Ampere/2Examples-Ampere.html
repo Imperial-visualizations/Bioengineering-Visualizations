@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Applications of Ampere's law</title>
+
+    <!--p5-->
+    <script src="libraries/p5.min.js"></script>
+
+    <script type="text/javascript" async
+            src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML">
+    </script>
+
+    <!--jquery-->
+    <script src="libraries/jquery.min.js"></script>
+
+    <link rel="icon" href="logo.png" type="image/x-icon">
+
+    <link rel="stylesheet" href="https://rawgit.com/cydcowley/public-test-data/master/Style2.css">
+   <!--
+    <link rel="stylesheet" href="styles/navigator.css">
+-->
+    <link rel="stylesheet" href="css/skeleton.css">
+    <link rel="stylesheet" href="css/style.css">
+
+</head>
+<body>
+    <!--
+    <div id='spinner'>
+    <span class="loading-message">Loading</span>
+    <div>
+        <div class="spinner-mask"></div>
+        <div id="spinner-bar"></div>
+        <div class="spinner-mask"></div>
+    </div>
+  </div>
+-->
+<div class="container pad-top" style="padding-top: 10vh">
+    <div class="row">
+        <div class="six columns" id="drawing-holder" style="height:70vh; padding:5vh;"></div>
+
+        <div class="six columns" id="text-holder">
+            <div class="slideshow-container">
+                <div class="mySlides fade">
+                    <h2>Single wire of current</h2>
+                    <button class="play">Play</button>
+                </div>
+                <div class="mySlides fade">
+                    <h2>Solenoid inductor</h2>
+                    <button class="play">Play</button>
+
+                </div>
+                <div class="mySlides fade">
+                    <h2>Toroid inductor</h2>
+                    <div class="three columns">
+                      <div id="circuit3-switch" class="switch">
+                        <label class="radioTitle"></label>
+                        <label for="C_1" class="radio">
+                          <input type="radio" id="C_1" value="C_1" name="circuit3-switch" checked="checked">
+                          <span>C<sub>1</sub></span>
+                        </label>
+                        <label for="C_2" class="radio">
+                          <input type="radio" id="C_2" value="C_2" name="circuit3-switch">
+                          <span>C<sub>2</sub></span>
+                        </label>
+                          <label for="C_3" class="radio">
+                          <input type="radio" id="C_3" value="C_3" name="circuit3-switch">
+                          <span>C<sub>3</sub></span>
+                        </label>
+                      </div>
+                    </div>
+                    <br>
+                    <button class="play">Play</button>
+
+                </div>
+                <!-- Next and previous buttons -->
+                <a class="prev" onclick="plusSlides(-1)">&#10094;</a>
+                <a class="next" onclick="plusSlides(1)">&#10095;</a>
+                <!-- The dots/circles -->
+                <div style="text-align:center">
+                    <span class="dot" onclick="currentSlide(1);"></span>
+                    <span class="dot" onclick="currentSlide(2);"></span>
+                    <span class="dot" onclick="currentSlide(3);"></span>
+                </div>
+            </div>
+            <br>
+
+        </div>
+    </div>
+</div>
+
+
+<script src="2Examples-Ampere.js"></script>
+<script>
+    let pages= ["1Ampere's-law.html", "2Examples-Ampere.html"];
+</script>
+
+<script src="https://rawgit.com/cydcowley/public-test-data/master/navigation.js"></script>
+<script src="css/navigator.js"></script>
+</body>
+</html>
