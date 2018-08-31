@@ -14,7 +14,6 @@ function setup() {
 
     //link the functions to the buttons
     $('#buttonPlay').click(buttonPlayFunction);
-    $('#buttonPause').click(buttonPauseFunction);
     $('#buttonField').click(buttonFieldFunction);
     $('#buttonAddWire').click(buttonAddWireFunction);
     $('#buttonRemoveWires').click(buttonRemoveWiresFunction);
@@ -34,7 +33,6 @@ let circuit = {
     diam: 200, //initial diameter
     x: $('#sketch-holder').width() / 2, //centered
     y: $('#sketch-holder').height() / 2, //centered
-
     //if want to change the shape of the circuit, this is to alter
     drawCircuit() {
         push();
@@ -47,14 +45,14 @@ let circuit = {
     },
 
     //this as well so that we follow the circuit
-    drawPath() {
+    drawPath(diam) {
         //have arc being bolder as we go on it--> from angle -PI/2 to angle
         push();
         strokeWeight(2);
         stroke(100, 40, 100);
         noFill();
         translate(this.x, this.y);
-        arc(0, 0, this.diam, this.diam, 3 * Math.PI / 2, theta);
+        arc(0, 0, diam, diam, 3 * Math.PI / 2, theta);
         pop();
     }
 };
@@ -346,7 +344,7 @@ function args_plot_Bdl(loop, wires) {
 //initial plot
 function initialPlot() {
     layout = {
-        title: 'Plot of <b>B.dl</b>',
+        title: 'Line integral of <b>B.dl</b> around the loop',
         xaxis: {
             title: 'theta',
             range: [-0.2, 2 * Math.PI + 0.2],
@@ -369,12 +367,16 @@ function initialPlot() {
 
 //button functions:
 function buttonPlayFunction() {
-    playing = true;
-    $('#Current-modifiers, #diameter-modifiers').hide();
+    playing = !playing;
+    if (playing){
+        $('#buttonPlay').html('Pause');
+    } else {
+        $('#buttonPlay').html('Play');
+    }
+
+    $('#Current-modifiers, #diameter-modifiers').css('opacity', '0.25');
 }
-function buttonPauseFunction() {
-    playing = false;
-}
+
 function buttonFieldFunction() {
     fieldDisplay = !fieldDisplay;
 }
@@ -395,7 +397,7 @@ function buttonRemoveWiresFunction() {
         let currents = currentContainer.length;
         currentContainer.splice(1, currents - 1);
         $('#buttonRemoveWires').hide();
-        $('#buttonField').show();
+        $('#buttonField').show;
         $('#buttonAddWire').show();
         wireSelected = 0;
     }
@@ -411,7 +413,9 @@ function buttonResetFunction() {
     //reset the plot
     args_plot_Bdl(circuit, currentContainer);
     Plotly.react('graph-holder', [trace, trace2], layout, {displayModeBar: false});
-    $('#Current-modifiers, #diameter-modifiers').show();
+    $('#Current-modifiers, #diameter-modifiers').css('opacity', '1');
+    $('#buttonPlay').html('Play');
+
 }
 
 function updateValuesFromSlider() {
@@ -440,7 +444,6 @@ function windowResized() {
     let width = $('#sketch-holder').width(), height = $('#sketch-holder').height();
     resizeCanvas(width, height);
 }
-
 //same for plotly
 window.onresize = function () {
     Plotly.Plots.resize('graph-holder');
@@ -496,21 +499,19 @@ function draw() {
             Plotly.react('graph-holder', [trace, trace2], layout, {displayModeBar: false});
         }
     } else { //we are not in start position
-        circuit.drawPath(); //draw the path from start position to current position
+        circuit.drawPath(circuit.diam); //draw the path from start position to current position
     }
 
     //while we play: we update the plotly graph to have the trace, we update the angle for the arrow
     if (playing) {
-        for (let i = 0; i < currentContainer.length; i++) {
-            currentContainer[i].color = 0;
-        }
+        currentContainer[wireSelected].color = 0;
         vectorB.updateAngle(); //we update the position of the arrow on the circuit
         countingFrames++;
         trace2.x = trace.x.slice(0, countingFrames + 1);
         trace2.y = trace.y.slice(0, countingFrames + 1);
         Plotly.react('graph-holder', [trace, trace2], layout, {displayModeBar: false});
         if (!playing) { //the precedent update set playing to false
-            $('#Current-modifiers, #diameter-modifiers').show();
+            $('#Current-modifiers, #diameter-modifiers').css('opacity', 1);
         }
     }
 }

@@ -1,10 +1,11 @@
 let wiresTot=[], wires1=[], wires2=[], wires3=[], theta=-Math.PI/2;
 wiresTot.push(wires1, wires2, wires3);
 let canvasExamples, width = $('#drawing-holder').width(), height = $('#drawing-holder').height();
-let lengthCircuit2 = width/3, heightCircuit2 = height/2, diam3=[Math.min(width, height)/6, Math.min(width, height)/3, Math.min(width, height)*4/6];
-const dTheta=0.01, mu0= 4*Math.PI*Math.pow(10, -7);
-let circuitSelected = 1;
-let playing=false, changes=true;
+let lengthCircuit2 = width/2, heightCircuit2 = height/4, diam3=[Math.min(width, height)/6, Math.min(width, height)/3, Math.min(width, height)*4/6];
+let diameterWires3= [(diam3[0]+diam3[1])/4, (diam3[1]+diam3[2])/4];
+const dTheta=0.04, mu0= 4*Math.PI*Math.pow(10, -7), I=5, intBdl=[];
+let circuitSelected = 0;
+let playing=false, changes=true, showToroid =true;
 
 let slideIndex = 1;
 showSlides(slideIndex);
@@ -32,13 +33,19 @@ function showSlides(n) {
   slides[slideIndex-1].style.display = "block";
   dots[slideIndex-1].className += " active";
 }
-
 $(".play").on('click', function(){playing=true; changes=true;});
-$('#circuit3-switch').on('change', function(){
-    if (this.value === 'C_1'){
+$('#showHideToroid').on('click', function(){
+    showToroid=!showToroid;
+    if (showToroid){$('#showHideToroid').html("Hide Toroid shape")}
+    else {$('#showHideToroid').html("Show Toroid shape")}
+    changes=true;
+});
+
+$('#circuit3-switch input').on('change', function(){
+    if (this.value === "C_1"){
         circuitSelected = 0;
     }
-    else if (this.value ==='C_2'){
+    else if (this.value ==="C_2"){
         circuitSelected = 1;
     }
     else {
@@ -48,24 +55,28 @@ $('#circuit3-switch').on('change', function(){
 })
 
 function setup(){
+
     canvasExamples = createCanvas(width, height);
     canvasExamples.parent('#drawing-holder');
-    frameRate(60);
+    frameRate(50);
     background(0);
-    wires1.push(new Wire(circuit.x, circuit.y, 5, 0));
-    for (let i=-lengthCircuit2; i<lengthCircuit2; i+=15){
-        wires2.push(new Wire(circuit.x+i, circuit.y, 5, 0));
+    //case 1: single wire of current
+    wires1.push(new Wire(circuit.x, circuit.y, I, 0));
+    //case 2: solenoid
+    for (let i=-lengthCircuit2*2/3; i<lengthCircuit2*2/3; i+=20){
+        wires2.push(new Wire(circuit.x+i, circuit.y+height/6, I, 0));
+        wires2.push(new Wire(circuit.x+i, circuit.y-height/6, -I, 0));
     }
-    let diameterWires3= [(diam3[0]+diam3[1])/4, (diam3[1]+diam3[2])/4];
-
+    //case 3: toroid
+    dt = 30/diameterWires3[0];
     for (let i=0; i<2; i++){
         let theta=0;
-        for (let theta=0; theta<2*Math.PI; theta+=15/diameterWires3[i]){
+        for (let theta=0; theta<2*Math.PI; theta+=dt){
             let posX = circuit.x+ diameterWires3[i]*Math.cos(theta);
             let posY = circuit.y+diameterWires3[i]*Math.sin(theta);
             let sign;
             if (i===0){sign=+1;} else {sign=-1;}
-            wires3.push(new Wire(posX, posY, sign*5, 0));
+            wires3.push(new Wire(posX, posY, sign*I, 0));
         }
 
     }
@@ -78,14 +89,14 @@ let circuit = {
 
     drawCircuit(diam) {
         push();
-        stroke(100);
+        stroke('blue');
         strokeWeight(1);
         noFill();
         translate(this.x, this.y);
         ellipse(0, 0, diam, diam);
         pop();
     },
-    drawPath(){
+    drawPath(diam){
         //have arc being bolder as we go on it--> from angle -PI/2 to angle
         push();
         strokeWeight(2);
@@ -97,10 +108,10 @@ let circuit = {
     },
     drawCircuit2(totLength, totHeight){
         push();
-        stroke(100);
+        stroke('blue');
         noFill();
-        translate(this.x, this.y);
-        rect(-totHeight/2 ,-totLength/2, totHeight, totLength)
+        translate(this.x, this.y+height/6);
+        rect( -totLength/2,-totHeight/2, totLength, totHeight)
     }
 
 };
@@ -145,7 +156,7 @@ vectorB= { //describes the green vector B and the small increase element dl at p
     x: circuit.x,
     y:circuit.y-circuit.diam/2,
     length : 0,
-    scaling :2000,
+    scaling :1000,
     r:[],
 
     updateAngle(){ //recursion of the angle
@@ -202,6 +213,25 @@ vectorB= { //describes the green vector B and the small increase element dl at p
         pop(); //reset the grid!
     }
 };
+function drawToroid( posX, posY, diam1, diam2, wires){
+    push();
+    stroke(100, 100, 100, 75);
+    strokeWeight(1);
+    noFill();
+    translate(posX, posY);
+    ellipse(0,0,diam1*2, diam1*2);
+    ellipse(0, 0, diam2*2, diam2*2);
+    pop();
+    push();
+    stroke(100, 100, 100);
+    let nbWires = wires.length;
+    for (let k=0; k<nbWires/2; k++){
+        let index2 = k+nbWires/2;
+        line(wires[k].x, wires[k].y, wires[index2].x, wires[index2].y);
+    }
+    pop();
+
+}
 /*function to calculate the value of B at a point [x, y] */
 function calculateB(setOfWires, x, y){
     let Bx=0;
@@ -218,6 +248,24 @@ function calculateB(setOfWires, x, y){
     }
     return [Bx, By];
 }
+/*calculate B.dl at an angle of rotation alpha (equivalent to method using [posX, posY] */
+function calculateBdl(loop, B, alpha) {
+    let dlLength = loop.diam / 2 * dTheta; //dl is a fraction of the circle
+    let dl = [Math.cos(alpha), Math.sin(alpha)];
+    const dl2 = dl.slice(0); //create a copy of dl
+    //rotate by  PI/2 to the right and scale by the length
+    dl[0] = -dl2[1] * dlLength;
+    dl[1] = dl2[0] * dlLength;
+    return B[0] * dl[0] + B[1] * dl[1]; //return the value of B.dl
+}
+
+function calculateIntBdl(path, Bdl){
+    /*path is an object containing the following elements:
+    - diameter
+    -
+    */
+
+}
 function vectorLength(vector) {
     let modulus=0;
     for (let i=0; i<vector.length; i++) {modulus+= Math.pow(vector[i],2); }
@@ -230,6 +278,7 @@ function checkStartPos(){
         return false;
     }
 }
+
 function draw(){
     if(playing||changes) {
         background(255);
@@ -252,11 +301,23 @@ function draw(){
         }
         else if (slideIndex === 3) {
             circuit.drawCircuit(diam3[circuitSelected]);
+            if (showToroid) {
+                drawToroid(circuit.x, circuit.y, diameterWires3[0], diameterWires3[1], wires3); //draw lines of toroid to show the shape
+            }
+            let circuitNumb = 'C'+(circuitSelected+1);
+            push();
+            stroke('hotPink');
+            fill('hotPink');
+            text(circuitNumb, circuit.x+Math.sqrt(2)*diam3[circuitSelected]/4+5, circuit.y+Math.sqrt(2)*diam3[circuitSelected]/4+5);
+            pop();
             vectorB.update(diam3[circuitSelected], wires3);
         }
 
         if (playing) {
             vectorB.updateAngle();
+        }
+        else{
+            $("#Bdl-holder").html("");
         }
         changes=false;
     }

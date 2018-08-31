@@ -37,22 +37,42 @@
 -->
 <div class="container pad-top" style="padding-top: 10vh">
     <div class="row">
-        <div class="six columns" id="drawing-holder" style="height:70vh; padding:5vh;"></div>
+        <div class="six columns" id="drawing-holder" style="height:70vh; padding:5vh;">
+            <p>\(\oint_C\mathbf{B.dl}=)\<span id="Bdl-holder"></span>\(I\mu_0\)</p>
+        </div>
 
         <div class="six columns" id="text-holder">
             <div class="slideshow-container">
                 <div class="mySlides fade">
                     <h2>Single wire of current</h2>
                     <button class="play">Play</button>
+                    <br>
+                    Realize \(\oint_C\mathbf{B.dl} = \mu _0 I.\)<br>
+                    Since the field is constant at a given distance, this gives us:
+                    $$\oint_C B.dl = \mu_0 I$$
+                    $$ B\times 2 \pi r = \mu_0 I$$
+                    $$B = \frac{\mu_0 I}{2\pi r} $$
                 </div>
                 <div class="mySlides fade">
                     <h2>Solenoid inductor</h2>
                     <button class="play">Play</button>
+                    <p>Consider a solenoid inductor, composed of N loops of current-carrying wire, which can be considered infinitely long except at the edges.
+                    <br>
+                    The magnetic field inside the solenoid can be found by painfully applying Biot-Savart law or by simple application of Ampere's law.
+                        <br>
+                        <br>
+                    \(\mathbf{B}\) inside the solenoid can be considered as constant, 0 outside of the rings and \(\mathbf{B.dl}=0\) on the perpendicular trajectories. The only part contributing to the loop integral is the one inside the solenoid.
+                        <br>
+                    On that path, \(\mathbf{B.dl}=|B||dl|\). Therefore:
+                        $$\oint_C \mathbf{B.dl}=\oint_C B\, dl = \mu_0 NI $$
+                        $$B\times L = \mu_0 NI$$
+                        $$B = \frac{\mu_0 NI}{L} = n\mu_0I$$
+                    </p>
 
                 </div>
                 <div class="mySlides fade">
                     <h2>Toroid inductor</h2>
-                    <div class="three columns">
+                    <div class = "row">
                       <div id="circuit3-switch" class="switch">
                         <label class="radioTitle"></label>
                         <label for="C_1" class="radio">
@@ -71,6 +91,9 @@
                     </div>
                     <br>
                     <button class="play">Play</button>
+                    <br>
+                    <p>A toroidal inductor is composed of loops of current wrapped in a donut shape.</p>
+                    <button id="showHideToroid">Show/Hide toroid shape</button>
 
                 </div>
                 <!-- Next and previous buttons -->
