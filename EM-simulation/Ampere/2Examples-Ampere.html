@@ -38,7 +38,8 @@
 <div class="container pad-top" style="padding-top: 10vh">
     <div class="row">
         <div class="six columns" id="drawing-holder" style="height:70vh; padding:5vh;">
-            <p>\(\oint_C\mathbf{B.dl}=\)<span id="Bdl-holder"></span>\(I\mu_0\)</p>
+            <h5>Ampere's law equation:</h5>
+            <p style="text-align:center">\(\oint_C\mathbf{B.dl}=\mu_0 \mu_r \sum I\)</p>
         </div>
 
         <div class="six columns" id="text-holder">
@@ -52,6 +53,7 @@
                     $$\oint_C B.dl = \mu_0 I$$
                     $$ B\times 2 \pi r = \mu_0 I$$
                     $$B = \frac{\mu_0 I}{2\pi r} $$
+                    This result could also have been found using Biot-Savart law, but can also be deduced using Ampere's law.
                 </div>
                 <div class="mySlides fade">
                     <h2>Solenoid inductor</h2>
@@ -92,7 +94,13 @@
                     <br>
                     <button class="play">Play</button>
                     <br>
-                    <p>A toroidal inductor is composed of loops of current wrapped in a donut shape.</p>
+                    <p>A toroidal inductor is composed of loops of current wrapped in a donut shape - ie a wire wound around a ring N times, carrying current I.</p>
+                    <p>For C<sub>1</sub>, \(\oint \mathbf{B_1.dl}=0\). There is no current comprised inside the loop.</p>
+                    <p>For C<sub>3</sub>, \(\oint \mathbf{B_3.dl}=\). Inside the loop, there are as many current wires carrying current out of the page as towards the page.</p>
+                    <p>For C<sub>2</sub>, a loop passing through the center of the toroid, \(\oint_{C_2}\mathbf{B_2.dl}=\mu_0 N I\). Since there are N wires carrying current I into the page and no current going out: \(\sum\limits^N{I}=N\times I\). If the radius of \(C_2\) is \(r_2\):</p>
+                    <p>$$\oint \mathbf{B_2.dl}=2\pi r_2\times B_2= \mu_0 N I$$
+                    $$B_2=\frac{\mu_0 NI}{2\pi r_2}$$
+                    </p>
                     <button id="showHideToroid">Show/Hide toroid shape</button>
 
                 </div>

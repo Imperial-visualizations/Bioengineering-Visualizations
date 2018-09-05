@@ -68,7 +68,7 @@ function setup(){
         wires2.push(new Wire(circuit.x+i, circuit.y-height/6, -I, 0));
     }
     //case 3: toroid
-    dt = 30/diameterWires3[0];
+    dt = 2*Math.PI/15;
     for (let i=0; i<2; i++){
         let theta=0;
         for (let theta=0; theta<2*Math.PI; theta+=dt){
@@ -78,7 +78,6 @@ function setup(){
             if (i===0){sign=+1;} else {sign=-1;}
             wires3.push(new Wire(posX, posY, sign*I, 0));
         }
-
     }
 }
 
@@ -315,9 +314,6 @@ function draw(){
 
         if (playing) {
             vectorB.updateAngle();
-        }
-        else{
-            $("#Bdl-holder").html("");
         }
         changes=false;
     }

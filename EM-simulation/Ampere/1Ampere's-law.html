@@ -33,7 +33,7 @@
 </head>
 
 <body>
-<div class="container">
+< class="container">
     <div id ='buttons-holder' class="three columns" style="position:absolute; left:0; top:15vh;">
         <button id="buttonReset" >Reset</button>
         <button id="buttonPlay" type="button">Play</button>
@@ -41,32 +41,41 @@
         <br><br>
         <p style="font-size:15px;"><b>Settings:</b><br>
         <span style="font-size: 13px;">(Settings can only be modified<br>when animation is on its start position)</span></p>
-        <div id="diameter-modifiers">
-            <label class="sliderTitle">Diameter of loop:</label>
-            <label class="slider">
-                <input id="diameterSlider" type="range" min="1" max="350" step="5">
-            </label>
-        </div>
+        <div id="settings">
+            <div id="circuit-modifiers">
+                <label for="circuitSelectList">Select loop type:</label>
+                <select id="circuitSelectList" class="form-control">
+                    <option value="0">circle</option>
+                    <option value="1">arcs 1</option>
+                    <option value="2">rectangle 1</option>
+                </select>
+            </div>
+            <div id="diameter-modifiers">
+                <label class="sliderTitle">Diameter of loop:</label>
+                <label class="slider">
+                    <input id="diameterSlider" type="range" min="1" max="350" step="5">
+                </label>
+            </div>
 
-        <div id="Current-modifiers">
-            <p>Wire Selected:  <b><span id="wireSelected" style="color:blue;"></span></b></p>
-            <button id="buttonAddWire" >Add current wire</button>
-            <br>
-            <button id="buttonRemoveWires" >Remove Wires</button>
-            <br>
-            <label for="currentSlider" class = "sliderTitle" id="tagCurrentSlider">Value I:
-                <b><span id="currentDynamicDisplay" data-unit="Amps">5</span></b>
-            </label>
-            <label class="slider">
-                <input id="currentSlider" name="currentSlider"  type="range" min="-10" max="10" step="0.1" value="5">
-                <span class="sliderMin" style="font-size:14px">-10A</span><span class="sliderMax" style="font-size:14px">10A</span>
-            </label>
-
+            <div id="Current-modifiers">
+                <p>Wire Selected:  <b><span id="wireSelected" style="color:blue;"></span></b></p>
+                <button id="buttonAddWire" >Add current wire</button>
+                <br>
+                <button id="buttonRemoveWires" >Remove Wires</button>
+                <br>
+                <label for="currentSlider" class = "sliderTitle" id="tagCurrentSlider">Value I:
+                    <b><span id="currentDynamicDisplay" data-unit="Amps">5</span></b>
+                </label>
+                <label class="slider">
+                    <input id="currentSlider" name="currentSlider"  type="range" min="-10" max="10" step="0.1" value="5">
+                    <span class="sliderMin" style="font-size:14px">-10A</span><span class="sliderMax" style="font-size:14px">10A</span>
+                </label>
+            </div>
         </div>
     </div>
 
-    <div id="graphics-holder" class="nine columns">
-        <div id="sketch-holder" style="position: absolute;right: 0; width: 65%; height: 50vh">
+    <div id="graphics-holder" class="eight columns">
+        <div id="sketch-holder" style="position: absolute; top:10vh; right: 0; width: 65%; height: 50vh">
         </div>
         <div id="graph-holder" style="position:absolute; right:25vh; top:60vh; width:43%; height:37vh"></div>
 
