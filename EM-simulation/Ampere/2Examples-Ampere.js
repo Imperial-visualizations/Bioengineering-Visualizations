@@ -1,10 +1,10 @@
-let wiresTot=[], wires1=[], wires2=[], wires3=[], theta=-Math.PI/2;
+let wiresTot=[], wires1=[], wires2=[], wires3=[], theta=-Math.PI/2, circuit3 =[];
 wiresTot.push(wires1, wires2, wires3);
 let canvasExamples, width = $('#drawing-holder').width(), height = $('#drawing-holder').height();
 let lengthCircuit2 = width/2, heightCircuit2 = height/4, diam3=[Math.min(width, height)/6, Math.min(width, height)/3, Math.min(width, height)*4/6];
 let diameterWires3= [(diam3[0]+diam3[1])/4, (diam3[1]+diam3[2])/4];
 const dTheta=0.04, mu0= 4*Math.PI*Math.pow(10, -7), I=5, intBdl=[];
-let circuitSelected = 0;
+let circuit3Selected = 0;
 let playing=false, changes=true, showToroid =true;
 
 let slideIndex = 1;
@@ -43,13 +43,13 @@ $('#showHideToroid').on('click', function(){
 
 $('#circuit3-switch input').on('change', function(){
     if (this.value === "C_1"){
-        circuitSelected = 0;
+        circuit3Selected = 0;
     }
     else if (this.value ==="C_2"){
-        circuitSelected = 1;
+        circuit3Selected = 1;
     }
     else {
-        circuitSelected = 2;
+        circuit3Selected = 2;
     }
     changes = true;
 })
@@ -61,19 +61,19 @@ function setup(){
     frameRate(50);
     background(0);
     //case 1: single wire of current
-    wires1.push(new Wire(circuit.x, circuit.y, I, 0));
+    wires1.push(new Wire(circuit1.x, circuit1.y, I, 0));
     //case 2: solenoid
     for (let i=-lengthCircuit2*2/3; i<lengthCircuit2*2/3; i+=20){
-        wires2.push(new Wire(circuit.x+i, circuit.y+height/6, I, 0));
-        wires2.push(new Wire(circuit.x+i, circuit.y-height/6, -I, 0));
+        wires2.push(new Wire(circuit1.x+i, circuit1.y+height/6, I, 0));
+        wires2.push(new Wire(circuit1.x+i, circuit1.y-height/6, -I, 0));
     }
     //case 3: toroid
     dt = 2*Math.PI/15;
     for (let i=0; i<2; i++){
         let theta=0;
-        for (let theta=0; theta<2*Math.PI; theta+=dt){
-            let posX = circuit.x+ diameterWires3[i]*Math.cos(theta);
-            let posY = circuit.y+diameterWires3[i]*Math.sin(theta);
+        for (let theta=0; theta<2*Math.PI-dt; theta+=dt){
+            let posX = circuit1.x+ diameterWires3[i]*Math.cos(theta);
+            let posY = circuit1.y+diameterWires3[i]*Math.sin(theta);
             let sign;
             if (i===0){sign=+1;} else {sign=-1;}
             wires3.push(new Wire(posX, posY, sign*I, 0));
@@ -81,20 +81,22 @@ function setup(){
     }
 }
 
-let circuit = {
-    diam:200, //initial diameter
-    x:$('#drawing-holder').width()/2, //centered
-    y: $('#drawing-holder').height()/2, //centered
+let Circuit =class {
+    constructor(diam){
+        this.diam=diam;
+        this.x = $('#drawing-holder').width()/2; //centered
+        this.y= $('#drawing-holder').height()/2; //centered
+    }
 
-    drawCircuit(diam) {
+    drawCircuit() {
         push();
         stroke('blue');
         strokeWeight(1);
         noFill();
         translate(this.x, this.y);
-        ellipse(0, 0, diam, diam);
+        ellipse(0, 0, this.diam, this.diam);
         pop();
-    },
+    }
     drawPath(diam){
         //have arc being bolder as we go on it--> from angle -PI/2 to angle
         push();
@@ -102,9 +104,9 @@ let circuit = {
         stroke(100, 40, 100);
         noFill();
         translate(this.x, this.y);
-        arc(0,0, this.diam, this.diam, 3*Math.PI/2, theta);
+        arc(0,0, diam, diam, -Math.PI/2, theta);
         pop();
-    },
+    }
     drawCircuit2(totLength, totHeight){
         push();
         stroke('blue');
@@ -114,6 +116,12 @@ let circuit = {
     }
 
 };
+let circuit1 = new Circuit(200);
+let circuit3_0 = new Circuit(Math.min(width, height)/6);
+let circuit3_1 = new Circuit(Math.min(width, height)/3);
+let circuit3_2 = new Circuit(Math.min(width, height)*4/6);
+circuit3.push(circuit3_0, circuit3_1, circuit3_2);
+
 
 const Wire= class {
     constructor(x, y, A, index) {
@@ -152,8 +160,8 @@ const Wire= class {
     }
 }
 vectorB= { //describes the green vector B and the small increase element dl at position (diam/2, theta)
-    x: circuit.x,
-    y:circuit.y-circuit.diam/2,
+    x: circuit1.x,
+    y:circuit1.y-circuit1.diam/2,
     length : 0,
     scaling :1000,
     r:[],
@@ -170,8 +178,8 @@ vectorB= { //describes the green vector B and the small increase element dl at p
     updateAngle3(){},
     update (distance, wires) { //update will redraw each arrow
         //update the position as we change the angle or the diameter
-        this.x = circuit.x + distance / 2 * cos(theta);
-        this.y = circuit.y + distance / 2 * sin(theta);
+        this.x = circuit1.x + distance / 2 * cos(theta);
+        this.y = circuit1.y + distance / 2 * sin(theta);
         //update the angle for the arrow
         let Bvect = calculateB(wires,this.x,this.y);
         this.length= vectorLength(Bvect)/mu0*this.scaling;
@@ -292,24 +300,27 @@ function draw(){
             wiresTot[slideIndex - 1][i].drawWire();
         }
         if (slideIndex === 1) {
-            circuit.drawCircuit(circuit.diam);
-            vectorB.update(circuit.diam, wires1);
+            circuit1.drawCircuit();
+            vectorB.update(circuit1.diam, wires1);
+            circuit1.drawPath(circuit1.diam);
         }
         else if (slideIndex === 2) {
-            circuit.drawCircuit2(lengthCircuit2, heightCircuit2);
+            circuit1.drawCircuit2(lengthCircuit2, heightCircuit2);
         }
         else if (slideIndex === 3) {
-            circuit.drawCircuit(diam3[circuitSelected]);
+            circuit3[circuit3Selected].drawCircuit();
             if (showToroid) {
-                drawToroid(circuit.x, circuit.y, diameterWires3[0], diameterWires3[1], wires3); //draw lines of toroid to show the shape
+                drawToroid(circuit1.x, circuit1.y, diameterWires3[0], diameterWires3[1], wires3); //draw lines of toroid to show the shape
             }
-            let circuitNumb = 'C'+(circuitSelected+1);
+            let circuitNumb = 'C'+(circuit3Selected+1);
             push();
             stroke('hotPink');
             fill('hotPink');
-            text(circuitNumb, circuit.x+Math.sqrt(2)*diam3[circuitSelected]/4+5, circuit.y+Math.sqrt(2)*diam3[circuitSelected]/4+5);
+            text(circuitNumb, circuit1.x+Math.sqrt(2)*circuit3[circuit3Selected].diam/4+5, circuit1.y+Math.sqrt(2)*circuit3[circuit3Selected].diam/4+5);
             pop();
-            vectorB.update(diam3[circuitSelected], wires3);
+            vectorB.update(circuit3[circuit3Selected].diam, wires3);
+            circuit3[circuit3Selected].drawPath(circuit3[circuit3Selected].diam);
+
         }
 
         if (playing) {
