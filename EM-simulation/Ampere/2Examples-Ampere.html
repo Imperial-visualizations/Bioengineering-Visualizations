@@ -43,8 +43,14 @@
         </div>
 
         <div class="six columns" id="text-holder">
-            <div class="slideshow-container">
-                <div class="mySlides fade">
+            <ul class="tab-nav">
+                <li><a class="button active" href="#SingleWire" value="0">Wire of current</a></li>
+                <li><a class="button" href="#solenoid" value="1">Solenoid inductor</a></li>
+                <li><a class="button" href="#toroid" value="2">Toroidal inductor</a></li>
+            </ul>
+       </ul>
+            <div class="tab-content">
+                <div class="tab-pane active" id="SingleWire">
                     <h2>Single wire of current</h2>
                     <button class="play">Play</button>
                     <br>
@@ -55,7 +61,7 @@
                     $$B = \frac{\mu_0 I}{2\pi r} $$
                     This result could also have been found using Biot-Savart law, but can also be deduced using Ampere's law.
                 </div>
-                <div class="mySlides fade">
+                <div class="tab-pane" id="solenoid">
                     <h2>Solenoid inductor</h2>
                     <button class="play">Play</button>
                     <p>Consider a solenoid inductor, composed of N loops of current-carrying wire, which can be considered infinitely long except at the edges.
@@ -72,7 +78,7 @@
                     </p>
 
                 </div>
-                <div class="mySlides fade">
+                <div class="tab-pane" id="toroid">
                     <h2>Toroid inductor</h2>
                     <div class = "row">
                       <div id="circuit3-switch" class="switch">
