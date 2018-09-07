@@ -1,4 +1,4 @@
-let wiresTot=[], wires1=[], wires2=[], wires3=[], theta=-Math.PI/2, circuit3 =[];
+let wiresTot=[], wires1=[], wires2=[], wires3=[], theta=-Math.PI/2, circuit3 =[], slideIndex = 1;
 wiresTot.push(wires1, wires2, wires3);
 let canvasExamples, width = $('#drawing-holder').width(), height = $('#drawing-holder').height();
 let lengthCircuit2 = width/2, heightCircuit2 = height/4, diam3=[Math.min(width, height)/6, Math.min(width, height)/3, Math.min(width, height)*4/6];
@@ -7,32 +7,21 @@ const dTheta=0.04, mu0= 4*Math.PI*Math.pow(10, -7), I=5, intBdl=[];
 let circuit3Selected = 0;
 let playing=false, changes=true, showToroid =true;
 
-let slideIndex = 1;
-showSlides(slideIndex);
 
-function plusSlides(n) {
-  showSlides(slideIndex += n);
-  changes = true;
-  playing=false;
-}
-function currentSlide(n) {
-  showSlides(slideIndex = n);
-}
-function showSlides(n) {
-  var i;
-  var slides = document.getElementsByClassName("mySlides");
-  var dots = document.getElementsByClassName("dot");
-  if (n > slides.length) {slideIndex = 1}
-  if (n < 1) {slideIndex = slides.length}
-  for (i = 0; i < slides.length; i++) {
-      slides[i].style.display = "none";
-  }
-  for (i = 0; i < dots.length; i++) {
-      dots[i].className = dots[i].className.replace(" active", "");
-  }
-  slides[slideIndex-1].style.display = "block";
-  dots[slideIndex-1].className += " active";
-}
+$(function() {
+    $('ul.tab-nav li a.button').click(function() {
+        var href = $(this).attr('href');
+        $('li a.active.button', $(this).parent().parent()).removeClass('active');
+        $(this).addClass('active');
+        $('.tab-pane.active', $(href).parent()).removeClass('active');
+        $(href).addClass('active');
+        slideIndex=$(this).parent().val();
+        playing = false;
+        theta=-Math.PI/2;
+        changes=true;
+        return false;
+    });
+});
 $(".play").on('click', function(){playing=true; changes=true;});
 $('#showHideToroid').on('click', function(){
     showToroid=!showToroid;
@@ -55,7 +44,6 @@ $('#circuit3-switch input').on('change', function(){
 })
 
 function setup(){
-
     canvasExamples = createCanvas(width, height);
     canvasExamples.parent('#drawing-holder');
     frameRate(50);
@@ -114,7 +102,6 @@ let Circuit =class {
         translate(this.x, this.y+height/6);
         rect( -totLength/2,-totHeight/2, totLength, totHeight)
     }
-
 };
 let circuit1 = new Circuit(200);
 let circuit3_0 = new Circuit(Math.min(width, height)/6);
@@ -328,6 +315,5 @@ function draw(){
         }
         changes=false;
     }
-
-
+    console.log(theta);
 }
