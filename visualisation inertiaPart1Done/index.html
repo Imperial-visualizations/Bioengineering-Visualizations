@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<!--jquery-->
+	<script
+  src="https://code.jquery.com/jquery-3.3.1.min.js"
+  integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+  crossorigin="anonymous"></script>
+	<!--plotly-->
+		<script src="plotly-latest.min.js"></script>
+	<!-- imperial style stuff-->
+	<link rel="stylesheet" href="https://rawgit.com/Imperial-visualizations/Physics-Visualizations/master/css/skeleton.css">
+  <link rel="stylesheet" href="https://rawgit.com/Imperial-visualizations/Physics-Visualizations/master/css/style.css">
+	<!--p5.js stuff-->
+	<link rel="stylesheet" href="style.css">
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Moments of Inertia</title>
+	<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
+
+
+	<style>
+		body {
+			margin:0;
+			padding:0;
+			overflow: hidden;
+		}
+		canvas {
+			margin:auto;
+		}
+		.text{
+			position:absolute;
+		}
+		.container{
+			position:relative;
+			top:120px;
+			left:30px;
+		}
+	</style>
+</head>
+
+<body>
+<script> let pages=['index.html','theory.html'];</script>
+<script src="https://rawgit.com/Imperial-visualizations/Physics-Visualizations/master/css/navigator.js"></script>
+
+
+<!--Sliders in HTML-->
+	<div class='container' style="top:80px; right:100px;" id="sim1">
+		<h5 class='text' style='top:30px;'><u>Rotational Equivalents of Linear Motion</u></h5>
+		<div class='row' style="width:500px; ">
+			<div class='six columns' class="text">
+			<div style="height:80px;">
+			</div>
+			<div  id="eSlider">
+                <label  class="sliderTitle">Energy(J):&nbsp;
+                    <span id="energyDisplay" data-unit="">1</span>
+                </label>
+                <label class="slider">
+                    <input id="energy"  class="inputs" type="range" value="10000" min="1000" max="1000000" step="0.01"/>
+                </label>
+						</div>
+
+			<div id="massSlider1">
+								<!--Mass1-->
+                <label class="sliderTitle">Mass(kg):&nbsp;
+                    <span  id="massDisplay1" data-unit="">1</span>
+                </label>
+                <label class="slider">
+                    <input  id="mass1" class="inputs" type="range" value="80" min="20" max="150" step="0.01"/>
+                </label>
+							</div>
+
+			<div id="distanceSlider1">
+								<!--distance1-->
+                <label class="sliderTitle">Distance(m):&nbsp;
+                    <span id="distanceDisplay1" data-unit="">30</span>
+                </label>
+                <label class="slider">
+                    <input  id="distance1" class="inputs" type="range" value="60" min="20" max="150" step="0.01"/>
+                </label>
+							</div>
+
+			<div id="massSlider2">
+								<!--Mass2-->
+                <label class="sliderTitle">Mass(kg):&nbsp;
+                    <span id="massDisplay2" data-unit="kg">15</span>
+                </label>
+                <label class="slider">
+                    <input  id="mass2" class="inputs" type="range" value="60" min="20" max="150" step="0.01"/>
+                </label>
+						</div>
+
+			<div  id="distanceSlider2">
+								<!--distance2-->
+								<label class="sliderTitle">Distance(m):&nbsp;
+										<span id="distanceDisplay2" data-unit="m">15</span>
+								</label>
+								<label class="slider">
+										<input  id="distance2" class="inputs" type="range" value="80" min="20" max="150" step="0.01"/>
+								</label>
+							</div>
+
+							<!--Arrows checkboxes-->
+							<p id="checkBox" class="text">Show Arrows: <input type="checkbox" id="myCheck" ></p>
+</div>
+<div class='six columns'>
+	<div id='p5canvas' class="text" style="width:300px;">
+</div>
+</div>
+<div class="six columns" style="display:none;" id='tableContainer'>
+	<!--Rotational Motion-->
+	<table id="rotTable" class='text' style="width:30%; height:60%; top:50px; left:850px;">
+		<caption><font size="4">Rotational Motion<font></caption>
+		<tr>
+			<th></th>
+			<th>Mass #1</th>
+			<th>Mass #2</th>
+			</tr>
+		<tr>
+			<th>$$\omega (rad.s^{-1})$$</th>
+			<th id="omega1"></th>
+			<th id="omega2"></th>
+		</tr>
+		<tr>
+			<th> $$v_t (m.s^{-1})$$</th>
+			<th id="velT1"></th>
+			<th id="velT2"></th>
+		</tr>
+		<tr>
+			<th> $$L (kg.m^2.s^{-1})$$</th>
+			<th id='angMomentum1'></th>
+			<th id='angMomentum2'></th>
+		</tr>
+		<tr>
+			<th> $$I (kg.m^2)$$</th>
+			<th id='inertia1'></th>
+			<th id='inertia2'></th>
+		</tr>
+	</table>
+
+	<!--Translational Motion-->
+	<table id="transTable" class='text' style=" width:30%; height:60%; top:50px; left:850px;">
+		<caption><font size="4">Translational Motion<font></caption>
+	<tr>
+		<th></th>
+		<th>Mass #1</th>
+		<th>Mass #2</th>
+		</tr>
+	<tr>
+		<th>$$v(m.s^{-1})$$</th>
+		<th id="velocity1"></th>
+		<th id="velocity2"></th>
+	</tr>
+	<tr>
+		<th> $$\rho (kg.m.s^{-1})$$</th>
+		<th id="momentum1"></th>
+		<th id="momentum2"></th>
+	</tr>
+	</table>
+	<button class='text' id='show' style="top:465px; left:840px;" type="button"></button>
+</div>
+</div>
+
+<p class='text' style="top:155px; left:270px;"><font size='2'>Point masses rotating about a stationary axis</font></p>
+<p class='text' style="top:155px; left:580px;"><font size='2'>Point masses travelling linearly</font></p>
+</div>
+
+
+<!-- Guiding System for animation-->
+<div class="guide">
+	Instructions
+</div>
+<div class="guideModal">
+	<div class="guideTest"></div>
+
+	<div class="modalContent">
+		<p id="modal_0">
+			The following simulation will compare linear and rotational quantities.
+			Use the sliders on the left to change different physical quantities.
+			<br> <br> <br>
+			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+			<input id="nextButton0" type="button" value="Next">
+		</p>
+		<p id="modal_1" hidden>
+			All circles shown are treated as point masses and attached to a 'massless' string.
+			Each 'point mass' has the same energy as every other, which may be varied through the
+			'Energy' slider.
+			<br> <br> <br>
+			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+			<input id="backButton1" type="button" value="Back">
+			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+			<input id="nextButton1" type="button" value="Next">
+
+		</p>
+		<p id="modal_2" hidden>
+			Click on the 'Theory' button to be redirected to in-depth explanations of moments of inertia.
+			Click on the 'Next' button to be redirected to the next simulation. Enjoy!
+			<br><br><br>
+			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+			<input id="backButton2" type="button" value="Back">
+				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+			<input id="nextButton2" type="button" value="Next">
+		</p>
+	</div>
+</div>
+<!--End of Guiding system-->
+
+<!--PLotly code + bar chart labels manually inserted MathJax-->
+<div class='container'id='barChartContainer'style="font-size:12px; top:-300px; left:-50px;">
+<div id='barChart' style="position:absolute; width:400px; left:930px; top:90px;"><!-- Plotly chart will be drawn inside this DIV --></div>
+<p class='text'style="top:323px;left:939.5px; background-color:white;">$$\omega (rad.s^{-1})$$</p>
+<p class='text' style="top:278px;left:946.5px; background-color:white;">$$v_t (m.s^{-1})$$</p>
+<p class='text' style="top:233px;left:922px; background-color:white;">$$L (kg.m^2.s^{-1})$$</p>
+<p class='text' style="top:188px;left:950.5px; background-color:white;"> $$I (kg.m^2)$$</p>
+<p class='text' style="top:415px;left:950.5px; background-color:white;">$$v(m.s^{-1})$$</p>
+<p class="text" style="top:368px;left:929.5px; background-color:white;">$$\rho (kg.m.s^{-1})$$</p>
+
+<div class='text' style="background-color:rgb(255,255,255); width:350px; height:50px; top:450px; left:1000px;"></div>
+
+</div>
+
+<!-- Button for user to choose between table of values or bar chart-->
+<button id='chartOrTable' type='button' class='text' style="top:600px;left:220px;"></button>
+
+<!-- Creating color labels with CSS-->
+<div style="height:10px;width:10px; background-color:rgb(255,0,0);position:absolute; top:235px; left:80px;"></div>
+<div style="height:10px;width:5px; background-color:rgb(0,0,255);position:absolute; top:235px; left:85px;"></div>
+<div style="height:10px;width:10px; background-color:rgb(255,0,0);position:absolute; top:280px; left:80px;"></div>
+<div style="height:10px;width:10px; background-color:rgb(255,0,0);position:absolute; top:325px; left:80px;"></div>
+<div style="height:10px;width:10px; background-color:rgb(0,0,255);position:absolute; top:370px; left:80px;"></div>
+<div style="height:10px;width:10px; background-color:rgb(0,0,255);position:absolute; top:415px; left:80px;"></div>
+
+<!-- Creating labels for animation with CSS-->
+<div class='text' style="top:560px; left:370px;">
+<div class='text'style='height:10px;width:10px;background-color:rgb(255,0,0)'>
+</div>
+<p class='text' style="top:-8px;left:14px; width:105px;">Mass #1</p>
+</div>
+
+<div class='text' style="top:560px; left:450px;">
+<div class='text'style='height:10px;width:10px;background-color:rgb(0,0,255)'>
+</div>
+<p class='text' style="top:-8px;left:14px; width:105px;">Mass #2</p>
+</div>
+<button id='theory' type='button' class='text' style="top:600px; left:90px;" onclick="location.href='theory.html';">Theory</button>
+<button id='next1' type='button' class='text' style="top:600px; left:1220px;" onclick="location.href='index2.html';">Next</button>
+
+<script src="libraries/p5.js"></script>
+<script src="libraries/p5.dom.js"></script>
+<script src="libraries/p5.sound.js"></script>
+<script src="sketch.js"></script>
+<script src="guidance.js"></script>
+</body>
+</html>

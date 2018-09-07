@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<!--jquery-->
+	<script
+  src="https://code.jquery.com/jquery-3.3.1.min.js"
+  integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+  crossorigin="anonymous"></script>
+	<!--plotly-->
+		<script src="plotly-latest.min.js"></script>
+	<!-- imperial style stuff-->
+	<link rel="stylesheet" href="https://rawgit.com/Imperial-visualizations/Physics-Visualizations/master/css/skeleton.css">
+  <link rel="stylesheet" href="https://rawgit.com/Imperial-visualizations/Physics-Visualizations/master/css/style.css">
+	<!--p5.js stuff-->
+<!--	<link rel="stylesheet" href="style2.css"> -->
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Moments of Inertia</title>
+	<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
+
+	<style>
+		body {
+			margin:0;
+			padding:0;
+			overflow: hidden;
+		}
+		canvas {
+			margin:auto;
+		}
+		.text{
+			position:absolute;
+		}
+	</style>
+</head>
+
+<body>
+<script> let pages=['index.html','theory.html'];</script>
+<script src="https://rawgit.com/Imperial-visualizations/Physics-Visualizations/master/css/navigator.js"></script>
+
+<div class='container'>
+<div class='row'>
+<div class='six columns'>
+	<div id='p5canvas' class="text" style="width:200px; height:100px;">
+</div>
+</div>
+</div>
+
+<!--
+<div id='center' class='text' style="height: 5px;
+  width: 5px;
+  background-color:black;
+  border-radius: 50%;
+	top:350px;
+	left:900px;
+	cursor:grab;">
+</div>
+-->
+
+<script src="libraries/p5.js"></script>
+<script src="libraries/p5.dom.js"></script>
+<script src="libraries/p5.sound.js"></script>
+<script src="sketch2.js"></script>
+<!--<script src="guidance2.js"></script> -->
+</body>
+</html>
