@@ -501,16 +501,14 @@ function calculateIntBdl(loop, wires, x, y){
         let t2=0, dt2=0;
         for (let i=0; i<loop.args.theta.length; i++){
             stepLength2Sign=1;
-            dt2 = loop.args.diam[i]/2*dTheta;
             if (i){stepLength2=loop.args.diam[i]-loop.args.diam[i-1];
             }
             else {stepLength2=loop.args.diam[0]-loop.args.diam[loop.args.theta.length];
             }
             if (stepLength2<0){stepLength2Sign=-1}
-            for (t=0; Math.abs(t)<Math.abs(stepLength2); t+=stepLength2Sign*dt2){
+            for (t=0; Math.abs(t)<Math.abs(stepLength2); t+=stepLength2Sign*dt){
                 Bdl2=Bdl;
                 let distance=vectorB.findDistanceToCenter(wires, loop, loop.args.theta[i])+t;
-                dt2 = distance*dTheta;
                 let posX = loop.x + distance / 2 * Math.cos(loop.args.theta[i]);
                 let posY = loop.y + distance / 2 * Math.sin(loop.args.theta[i]);
                 B = calculateB(wires, posX, posY);
@@ -679,7 +677,7 @@ function updateValuesFromSlider() {
 }
 
 function checkStartPos() {
-    if (!playing && theta >= -Math.PI / 2 && theta <= -Math.PI / 2 + dTheta) {
+    if (!playing && theta >= -Math.PI / 2-dTheta/2 && theta <= -Math.PI / 2 + dTheta) {
         return true;
     } else {
         return false;
