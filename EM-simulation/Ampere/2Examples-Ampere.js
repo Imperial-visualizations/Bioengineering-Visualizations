@@ -10,7 +10,7 @@ let playing=false, changes=true, showToroid =true;
 
 $(function() {
     $('ul.tab-nav li a.button').click(function() {
-        var href = $(this).attr('href');
+        let href = $(this).attr('href');
         $('li a.active.button', $(this).parent().parent()).removeClass('active');
         $(this).addClass('active');
         $('.tab-pane.active', $(href).parent()).removeClass('active');
@@ -51,7 +51,7 @@ function setup(){
     //case 1: single wire of current
     wires1.push(new Wire(circuit1.x, circuit1.y, I, 0));
     //case 2: solenoid
-    for (let i=-lengthCircuit2*2/3; i<lengthCircuit2*2/3; i+=20){
+    for (let i=-lengthCircuit2+20; i<lengthCircuit2; i+=20){
         wires2.push(new Wire(circuit1.x+i, circuit1.y+height/6, I, 0));
         wires2.push(new Wire(circuit1.x+i, circuit1.y-height/6, -I, 0));
     }
@@ -101,6 +101,39 @@ let Circuit =class {
         noFill();
         translate(this.x, this.y+height/6);
         rect( -totLength/2,-totHeight/2, totLength, totHeight)
+        pop();
+    }
+    drawPath2(totLength, totHeight){
+        //have arc being bolder as we go on it--> from angle -PI/2 to angle
+        push();
+        strokeWeight(2);
+        stroke(100, 40, 100);
+        noFill();
+        translate(this.x, this.y+height/6);
+        let h = totHeight, w = totLength;
+            let alpha = atan2(h,w);
+            if (theta>= -Math.PI/2 &&theta< -alpha ){
+                line(0, -h/2, -h/2/Math.tan(theta), -h/2);
+            } else if (theta>=-alpha&&theta<=alpha){
+                line(0, -h/2, w/2, -h/2);
+                line(w/2, -h/2, w/2, w*Math.tan(theta)/2);
+            } else if (theta>=alpha && theta<=Math.PI-alpha){
+                line(0, -h/2, w/2, -h/2);
+                line(w/2, -h/2, w/2, h/2);
+                line (w/2, h/2, h/2/Math.tan(theta), h/2);
+            } else if (theta>= Math.PI-alpha || theta<= alpha- Math.PI){
+                line(0, -h/2, w/2, -h/2);
+                line(w/2, -h/2, w/2, h/2);
+                line (w/2, h/2, -w/2, h/2);
+                line(-w/2, h/2, -w/2, -w*Math.tan(theta)/2);
+            } else if (theta> alpha-Math.PI &&theta< -Math.PI/2){
+                line(0, -h/2, w/2, -h/2);
+                line(w/2, -h/2, w/2, h/2);
+                line (w/2, h/2, -w/2, h/2);
+                line(-w/2, h/2, -w/2, -h/2);
+                line(-w/2, -h/2, -h/2/Math.tan(theta), -h/2);
+            }
+        pop();
     }
 };
 let circuit1 = new Circuit(200);
@@ -150,7 +183,7 @@ vectorB= { //describes the green vector B and the small increase element dl at p
     x: circuit1.x,
     y:circuit1.y-circuit1.diam/2,
     length : 0,
-    scaling :1000,
+    scaling :800,
     r:[],
 
     updateAngle(){ //recursion of the angle
@@ -161,12 +194,31 @@ vectorB= { //describes the green vector B and the small increase element dl at p
             theta=-Math.PI/2;
         }
     },
-    updateAngle2(){},
-    updateAngle3(){},
-    update (distance, wires) { //update will redraw each arrow
+    findDistance2(wires, angle,totLength, totHeight){
+        let distance=0;
+        let h = totHeight, w=totLength;
+        let alpha = atan2(h,w);
+        if (angle>= alpha-Math.PI && angle< -alpha ){ distance = Math.abs(h/Math.sin(angle));
+        } else if (angle>=-alpha && angle<alpha){distance = Math.abs(w/Math.cos(angle));
+        } else if (angle>=alpha && angle<Math.PI-alpha){distance = Math.abs(h/Math.sin(angle));
+        } else if (angle>= Math.PI-alpha || angle< alpha- Math.PI){distance = Math.abs(w/Math.cos(angle));
+        }
+        return distance;
+    },
+    calcAngleRot2(angle, totHeight, totLength){
+        let alpha = atan2(totHeight,totLength);
+        if (angle>= alpha- Math.PI &&angle< -alpha ) {return (-Math.PI/2);
+        } //do not rotate for RHS
+        else if (angle>=alpha && angle<=Math.PI-alpha){return (Math.PI/2);
+        } else if (angle>= Math.PI-alpha || angle<=alpha- Math.PI){return (Math.PI);
+        } //last case needs no rotation
+        else {return 0;}
+    },
+    //update will redraw each arrow
+    update (posX, posY, distance, wires, angleRot) {  //angleRot is the rotation for the dl vect
         //update the position as we change the angle or the diameter
-        this.x = circuit1.x + distance / 2 * cos(theta);
-        this.y = circuit1.y + distance / 2 * sin(theta);
+        this.x = posX + distance / 2 * cos(theta);
+        this.y = posY + distance / 2 * sin(theta);
         //update the angle for the arrow
         let Bvect = calculateB(wires,this.x,this.y);
         this.length= vectorLength(Bvect)/mu0*this.scaling;
@@ -190,12 +242,12 @@ vectorB= { //describes the green vector B and the small increase element dl at p
         //draw small increase element dl
         fill(0);
         rotate(-angle);
-        rotate(theta); //arrow on the circuit
+        rotate(angleRot); //arrow on the circuit
         strokeWeight(2);
         stroke(200, 0, 200);
         line(0,0, -6, -10);
         line(0,0, 6, -10);
-        rotate(-theta);
+        rotate(-angleRot);
         //text for the arrows (vector B and small increase element dl
         strokeWeight(1);
         textSize(15);
@@ -253,13 +305,6 @@ function calculateBdl(loop, B, alpha) {
     return B[0] * dl[0] + B[1] * dl[1]; //return the value of B.dl
 }
 
-function calculateIntBdl(path, Bdl){
-    /*path is an object containing the following elements:
-    - diameter
-    -
-    */
-
-}
 function vectorLength(vector) {
     let modulus=0;
     for (let i=0; i<vector.length; i++) {modulus+= Math.pow(vector[i],2); }
@@ -288,11 +333,13 @@ function draw(){
         }
         if (slideIndex === 1) {
             circuit1.drawCircuit();
-            vectorB.update(circuit1.diam, wires1);
+            vectorB.update(circuit1.x, circuit1.y, circuit1.diam, wires1,theta);
             circuit1.drawPath(circuit1.diam);
         }
         else if (slideIndex === 2) {
             circuit1.drawCircuit2(lengthCircuit2, heightCircuit2);
+            vectorB.update(circuit1.x, circuit1.y+height/6, vectorB.findDistance2(wires2, theta,lengthCircuit2, heightCircuit2 ), wires2, vectorB.calcAngleRot2(theta, heightCircuit2,lengthCircuit2));
+            circuit1.drawPath2(lengthCircuit2,heightCircuit2);
         }
         else if (slideIndex === 3) {
             circuit3[circuit3Selected].drawCircuit();
@@ -305,7 +352,7 @@ function draw(){
             fill('hotPink');
             text(circuitNumb, circuit1.x+Math.sqrt(2)*circuit3[circuit3Selected].diam/4+5, circuit1.y+Math.sqrt(2)*circuit3[circuit3Selected].diam/4+5);
             pop();
-            vectorB.update(circuit3[circuit3Selected].diam, wires3);
+            vectorB.update(circuit3[circuit3Selected].x, circuit3[circuit3Selected].y,circuit3[circuit3Selected].diam, wires3, theta);
             circuit3[circuit3Selected].drawPath(circuit3[circuit3Selected].diam);
 
         }
@@ -315,5 +362,4 @@ function draw(){
         }
         changes=false;
     }
-    console.log(theta);
 }

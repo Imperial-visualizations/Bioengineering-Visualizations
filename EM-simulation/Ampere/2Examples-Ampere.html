@@ -48,7 +48,6 @@
                 <li value="2"><a class="button" href="#solenoid">Solenoid inductor</a></li>
                 <li value="3"><a class="button" href="#toroid">Toroidal inductor</a></li>
             </ul>
-       </ul>
             <div class="tab-content">
                 <div class="tab-pane active" id="singleWire">
                     <h3>Single wire of current</h3>
@@ -59,7 +58,7 @@
                     $$\oint_C B.dl = \mu_0 I$$
                     $$ B\times 2 \pi r = \mu_0 I$$
                     $$B = \frac{\mu_0 I}{2\pi r} $$
-                    This result could also have been found using Biot-Savart law, but can also be deduced using Ampere's law.
+                    This result could also have been found using Biot-Savart law, but can be easily derived using Ampere's law.
                 </div>
                 <div class="tab-pane" id="solenoid">
                     <h3>Solenoid inductor</h3>
@@ -102,9 +101,15 @@
                     <button id="showHideToroid">Show/Hide toroid shape</button>
                     <br>
                     <p>A toroidal inductor is composed of loops of current wrapped in a donut shape - ie a wire wound around a ring N times, carrying current I.</p>
-                    <p>For C<sub>1</sub>, \(\oint \mathbf{B_1.dl}=0\). There is no current comprised inside the loop.</p>
-                    <p>For C<sub>3</sub>, \(\oint \mathbf{B_3.dl}=\). Inside the loop, there are as many current wires carrying current out of the page as towards the page.</p>
-                    <p>For C<sub>2</sub>, a loop passing through the center of the toroid, \(\oint_{C_2}\mathbf{B_2.dl}=\mu_0 N I\). Since there are N wires carrying current I into the page and no current going out: \(\sum\limits^N{I}=N\times I\). If the radius of \(C_2\) is \(r_2\):</p>
+                    <p>
+                        For C<sub>1</sub>, there is no current comprised inside the loop.
+                        <br>
+                        For C<sub>3</sub>, there are as many current wires carrying current out of the page as towards the page, and therefore the net current inside the loop is 0.
+                    </p>
+                    <p>
+                        Therefore, for C<sub>1</sub> and C<sub>3</sub>, \(\oint \mathbf{B_1.dl}=0\).
+                    </p>
+                     <p>For C<sub>2</sub>, a loop passing through the center of the toroid, \(\oint_{C_2}\mathbf{B_2.dl}=\mu_0 N I\). Since there are N wires carrying current I into the page and no current going out: \(\sum\limits^N{I}=N\times I\). If the radius of \(C_2\) is \(r_2\):</p>
                     <p>$$\oint \mathbf{B_2.dl}=2\pi r_2\times B_2= \mu_0 N I$$
                     $$B_2=\frac{\mu_0 NI}{2\pi r_2}$$
                     </p>
