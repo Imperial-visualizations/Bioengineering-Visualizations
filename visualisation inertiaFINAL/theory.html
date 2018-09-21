@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<!--jquery-->
+	<script
+  src="https://code.jquery.com/jquery-3.3.1.min.js"
+  integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+  crossorigin="anonymous"></script>
+<!--plotly-->
+	<script src="plotly-latest.min.js"></script>
+	<!-- imperial style stuff-->
+	<link rel="stylesheet" href="https://rawgit.com/Imperial-visualizations/Physics-Visualizations/master/css/skeleton.css">
+  <link rel="stylesheet" href="https://rawgit.com/Imperial-visualizations/Physics-Visualizations/master/css/style.css">
+	<!--p5.js stuff-->
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Moments of Inertia</title>
+	<script src="libraries/p5.js"></script>
+	<script src="libraries/p5.dom.js"></script>
+	<script src="libraries/p5.sound.js"></script>
+	<script src="sketch.js"></script>
+	<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
+
+
+	<style>
+		body {
+			margin:0;
+			padding:0;
+			overflow: hidden;
+		}
+		canvas {
+			margin:auto;
+		}
+		.slider{
+			width:100%;
+		}
+		.text{
+			position:absolute;
+		}
+		.container{
+			position:relative;
+			top:120px;
+			left:30px;
+		}
+	</style>
+</head>
+
+<body style="overflow:scroll;">
+<script> let pages=['index.html','theory.html','index2.html'];</script>
+<script src="https://rawgit.com/Imperial-visualizations/Physics-Visualizations/master/css/navigator.js"></script>
+
+<!--Theory-->
+<h3 class='text'style="top:100px; left:50px;">Moments of Inertia - Theory</h3>
+<h5 class='text' style="top:180px; left:50px;"><b>1. Introduction</b></h5>
+<p class='text' style='top:230px; left:50px;'>
+When a particle or a body enter rotational motion, equivalents can be drawn from linear motion.
+However, there are some key differences that must<br>
+be addressed. For instance, as shown in the first simulation, when the distance from the axis of rotation of a point mass increases while its mass<br>
+and kinetic energy remain constant, the tangential velocity of the mass decreases. This implies that for a rigid body or a system of particles rotating<br>
+about an axis, all particles have a different tangential velocity, dependent on the radius of its circular path. Therefore, a quantity that relates to the<br>
+speed of rotation and is independent of this distance is required, which is known as the angular velocity or frequency, and measured in radians per<br>
+second. It is defined in eq.(1), where 'r' is the radius of the circular path and 'T' is the time taken for one complete path (one oscillation).
+<br> <br>
+Torque, or moment of force, is commonly referred to as the rotational analogue of force, being responsible for any angular acceleration. It also shows a<br>
+dependency on the distance from the axis of rotation, as displayed in eq.(2) as the cross product of the position and force vectors. Therefore, there is a<br>
+quantity that can be treated as the rotational equivalent of mass, representing a body's tendency to resist angular acceleration. This quantity is defined<br>
+as the moment of inertia, shown in eq.(3) for a point mass.
+</p>
+<p class='text' style="top:210px; left:1100px; font-size:13px;">$$(1) &emsp; \omega={v_t \over r} = {2\pi \over T} $$</p>
+<p class='text' style="top:260px; left:1100px; font-size:13px;">$$(2) &emsp;  {\vec \tau}= {\vec r} \times {\overrightarrow F}$$</p>
+<p class='text' style="left:1100px; top:310px; font size:13px;">$$(3) &emsp; I=md^2 $$</p>
+
+
+<h5 class='text' style="top:530px; left:50px;"><b>2. Rotational Equivalents of Linear Motion</b></h5>
+<p class="text" style="left:50px; top:600px;">
+The moment of Inertia is sometimes referred to as the 'rotational equivalent' of mass for linear motion.<br>
+It is the sum of the mass of each particle in the body with the square of the distance from the axis of rotation,<br>
+As previously mentioned and shown in eq.(3). While mass is also an important component in resisting rotational<br>
+motion, just as in linear motion, it also shows a large dependencer on the displacement of each point mass from the<br>
+axis of rotation. This can be visually seen through the visualization. When the mass(kg) of one point mass is equal<br>
+the distance(m) of the other and vice versa, the heavier one closer to the axis of rotation will have a greater angular<br>
+velocity. Furthermore, other rotational quantities also have linear equivalents, as shown in the table to the right.<br>
+	<br>
+To quantify the dependence of both mass and distance from the axis of rotation together, the moment<br>
+of inertia was defined. For a rigid body (where defomation is negligible) rotating about its center of mass,<br>
+the moment of inertia can be found through the sum of the moments of inertia of its infinitely many constituent<br>
+point masses. In mathematical terms, this relationship can be represented by the following equation:
+</p>
+<p class='text' style="left:140px; top:900px;"><font size="5px">$$I_{tot}=\int{r^2.dm} $$</font></p>
+<p class="text" style="left:450px; top:930px;">For theory regarding the parallel axis theorem, click on the 'Page 2' button.</p>
+</p>
+<table class='text' style="top:600px; left:850px; border: 1px solid black; text-align:center;">
+  <tr>
+    <th>Rotational Motion</th>
+    <th>Linear Motion</th>
+  </tr>
+  <tr>
+    <th>$$L=I \omega$$</th>
+    <th>$$p=mv$$</th>
+  </tr>
+  <tr>
+    <th>$$KE_{rot} =\frac{1}{2}I{{\omega}^2}$$</th>
+    <th>$$KE_{trans} =\frac{1}{2}mv^2$$</th>
+  </tr>
+  <tr>
+    <th>$$\tau=I\alpha$$</th>
+    <th>$$F=ma$$</th>
+  </tr>
+</table>
+
+</div>
+<button type='button' style="top:100px;left:950px;" class='text' onclick="location.href='index2.html';">Page 2</button>
+<button type='button' style="top:100px;left:830px;" class='text' onclick="location.href='index.html';">Page 1</button>
+
+
+</body>
+</html>
