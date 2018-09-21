@@ -1,3 +1,24 @@
+/*
+AMpere's law visualization, page 2
+Aline Buat
+July 2018 - September 2018
+
+
+NEEDS:
+- P5.js
+- jquery
+- MathJax
+- navigator.js (required to switch to second page)
+- all css stylesheets requiered for the Imperial Visualization page consistency
+
+
+Second page aimed at using Ampere's law in symetrical cases
+Follows the 1st page of the visualization
+This page uses some functions from the main page, but is set for easier cases and has much less interractions
+
+ */
+
+
 let wiresTot=[], wires1=[], wires2=[], wires3=[], theta=-Math.PI/2, circuit3 =[], slideIndex = 1;
 wiresTot.push(wires1, wires2, wires3);
 let canvasExamples, width = $('#drawing-holder').width(), height = $('#drawing-holder').height();
@@ -7,7 +28,7 @@ const dTheta=0.04, mu0= 4*Math.PI*Math.pow(10, -7), I=5, intBdl=[];
 let circuit3Selected = 0;
 let playing=false, changes=true, showToroid =true;
 
-
+//set functionality for changing tab-pads (for different examples)
 $(function() {
     $('ul.tab-nav li a.button').click(function() {
         let href = $(this).attr('href');

@@ -1,3 +1,36 @@
+/*
+Aline Buat
+Ampere's law demonstration page 1
+Javascript main code
+
+This code is aimed to defining all the interractions on the page
+It mainly uses p5 canvas and p5.draw for main loop.
+Interractions from inputs are acquired using jquery
+
+Several shapes for the loop are defined.
+The circle one works perfectly, the integrals for the arcs and the rectangles are still approximative.
+Those 2 shapes are still left messy
+
+The center of the x, y positions is set as the upper left part of the canvas.
+Most of the drawings are defined in polar coordinates
+The angles go from -PI to PI, (left), the angles being negative in the upper part of the circle
+The default angle is set here as -PI/2
+If this needs to change, many changes in how to draw will need to be done (mostly respect to the last 2 shape types)
+
+If this project was to be redone, it would be good be able to go from polar to cartesian (would be more useful to calculate),
+or have relative coordinates respect to each wire
+While the integral of B.dl is calculated after finding the total magnetic field at a point (by linear addition of the fields due to each wire),
+maybe it would also be possible to calculate the circulation of the field due to each wire and then add them up.
+
+
+What would be great and very cool would be to be able to have a display of the magnetic field at all points,
+either with the use of magnetic lines or by calculating the value of the field at each point (but many calculations already)
+Maybe only setting calculations when need display, and avoid wires moving while display
+would then require only one calculation and therefore not slow viz down
+*/
+
+
+
 let currentContainer = [], circuitContainer=[], arrows = [], myCanvas, countingFrames = 0, notChangeAngle=false, stepLength=1,t=10;
 let vectorB, circuit, arc1,arc2, rectangle1, square1, theta = -Math.PI / 2, magFieldScaling = 200;
 const dTheta = 0.01, dt=1, mu0 = 4 * Math.PI * Math.pow(10, -7);
@@ -271,7 +304,7 @@ circuit= new Circuit($('#sketch-holder').width() / 2, $('#sketch-holder').height
 circuitContainer.push(circuit);
 arc1= new Circuit($('#sketch-holder').width() / 2, $('#sketch-holder').height() / 2, "arcs", {diam:[150, 300, 250, 200], theta:[-Math.PI/3, Math.PI+Math.PI/7, Math.PI/2, 2*Math.PI/3]});
 circuitContainer.push(arc1);
-arc2 = new Circuit($('#sketch-holder').width() / 2, $('#sketch-holder').height() / 2, "arcs", {diam:[125, 240, 200, 300], theta:[Math.PI/6, Math.PI-Math.PI/7, -Math.PI/3, 2*Math.PI/3]});
+arc2 = new Circuit($('#sketch-holder').width() / 2, $('#sketch-holder').height() / 2, "arcs", {diam:[125, 240, 200, 300], theta:[Math.PI/6, Math.PI-Math.PI/7, -Math.PI/3, -2*Math.PI/3]});
 circuitContainer.push(arc2);
 rectangle1 = new Circuit($('#sketch-holder').width() / 2, $('#sketch-holder').height() / 2, "rectangle", {height:100, width:300});
 circuitContainer.push(rectangle1);
