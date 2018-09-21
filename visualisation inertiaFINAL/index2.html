@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<!--jquery-->
+	<script
+  src="https://code.jquery.com/jquery-3.3.1.min.js"
+  integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+  crossorigin="anonymous"></script>
+	<!--plotly-->
+		<script src="plotly-latest.min.js"></script>
+	<!-- imperial style stuff-->
+	<link rel="stylesheet" href="https://rawgit.com/Imperial-visualizations/Physics-Visualizations/master/css/skeleton.css">
+  <link rel="stylesheet" href="https://rawgit.com/Imperial-visualizations/Physics-Visualizations/master/css/style.css">
+	<!--p5.js stuff-->
+<!--	<link rel="stylesheet" href="style2.css"> -->
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Moments of Inertia</title>
+	<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
+
+	<style>
+		body {
+			margin:0;
+			padding:0;
+			overflow: hidden;
+		}
+		canvas {
+			margin:auto;
+		}
+		.text{
+			position:absolute;
+		}
+	</style>
+</head>
+
+<body>
+<script> let pages=['index.html','theory.html','index2.html'];</script>
+<script src="https://rawgit.com/Imperial-visualizations/Physics-Visualizations/master/css/navigator.js"></script>
+
+<div class='container'>
+<div class='row'>
+<div class='six columns'>
+	<div id='p5canvas' class="text" style="border:thin; left:400px; top:70px; width:200px; height:120px;">
+</div>
+</div>
+</div>
+
+<div class='container'style='top:450px; left:200px;'>
+<!--Varies between different shapes-->
+<select id="select" class="text" name="Shape" style="top:80px; left:300px;">
+<option value=1>Rectangular parrallelpiped</option>
+<option value=2>Cylinder</option>
+<option value=3>Hoop</option>
+<option value=4>Cylindrical Shell</option>
+<option value=5>Spherical Shell</option>
+<option value=6>Sphere</option>
+</select>
+
+<!--Sliders-->
+<div class='text' style="left:500px;" id='recDisplay'>
+
+	<label  class="sliderTitle" style="position:relative;top:-10px;">Height(m):&nbsp;
+			<span id="heightDisplay" data-unit="">1</span>
+	</label>
+	<label class="slider">
+<input id="height"  class="inputs" type="range" value="5" min="1" max="10" step="0.01"/>
+</label>
+
+<label  class="sliderTitle" style="position:relative;top:10px;">Width(m):&nbsp;
+		<span id="widthDisplay" data-unit="">1</span>
+</label>
+<label class="slider">
+<input style='top:80px;' id="width"  class="inputs text" type="range" value="5" min="1" max="10" step="0.01"/>
+</label>
+
+</div>
+
+<div class='text' style="left:500px;"id='roundDisplay'>
+	<label  class="sliderTitle">Radius(m):&nbsp;
+			<span id="radiusDisplay" data-unit="">1</span>
+	</label>
+	<label class="slider">
+<input id="radius"  class="inputs" type="range" value="5" min="1" max="10" step="0.01"/>
+</div>
+</div>
+
+<div class="text" style="left:570px; top:648px;">
+	<label  class="sliderTitle" style="position:relative;top:-10px;">Mass(kg):&nbsp;
+			<span id="massDisplay" data-unit="">1</span>
+	</label>
+	<label class="slider">
+	<input id="mass"  class="inputs" type="range" value="5" min="1" max="100" step="0.01"/>
+	</label>
+</div>
+
+<!-- Integrals-->
+<p class='text' style="top:200px; font-size:12px;">
+	Any axis of rotation can be described relative to a parallel axis of<br>
+	rotation passing through the centre of mass of a rigid body. For an <br>
+	elemental mass, <i>dm</i>,constituent of the rigid body witha perpendicular<br>
+	distances <i>r<font size='0.3'>cm</font></i> from the axis through the center of mass and <i>r</i> from the <br>
+	original axis:
+<p class="text" style="top:300px; left:38px; font-size:12px;">$$ r=d+r_{cm}$$</p>
+<p class='text' style='top:340px; font-size:12px;'>$$(1) &emsp;(r)^2=(d+r_{cm})^2=d^2 + 2dr_{cm} + r_{cm}^2$$</p>
+<p class='text' style='top:390px;font-size:12px;'>
+Additionally, by definition of moment of inertia:</p>
+<p class='text'style="top:400px; font-size:12px;">$$(2) &emsp; I_{tot}=\int {r^2dm}$$</p>
+<p class='text' style='top:450px; font-size:12px;'>By substituting Eq.(1) into Eq.(2):</p>
+<p class='text'style='top:460px; font-size:12px;'>$$I_{tot}=\int {dm(d^2 + 2dr_{cm} + r_{cm}^2)}$$</p>
+<p class='text'style='top:500px; font-size:12px;'>$$I_{tot}={\int d^2dm} + 2d{\int dm r_{cm}} + {\int dm(r_{cm})^2}$$</p>
+<p class='text'style='top:550px; font-size:12px;'>Finally, by the definition of the centre of mass (as it is treated as the origin<br>
+coordinate), the second integral is equal to 0, resulting in the parallel axis theorem:</p>
+<p class='text' style='top:590px; font-size:17px;'>$$(3) &emsp;I_{tot}=&emsp;&ensp;+&emsp;&emsp;=&emsp;&emsp;&ensp;+&emsp;&emsp;&emsp;&emsp;=$$</p>
+<p class='text' style='top:590px; left:100px; font-size:17px; color:blue;'>$$I_{cm}$$</p>
+<p class='text' style='top:587px; left:155px; font-size:17px; color:red;'>$$md^2$$</p>
+
+<p id='iDisplay'class='text' style='top:590px; left:160px; font-size:17px; color:blue;'></p>
+<p id='mdDisplay'class='text' style='top:590px; left:215px; font-size:17px; color:red;'></p>
+
+<!--Numbers-->
+<p id='icm' class='text'style="top:603px; left:220px; font-size:17px; color:blue;"></p>
+<p id='md2' class='text'style="top:603px; left:300px; font-size:17px; color:red;"></p>
+<p id='iTot' class='text'style="top:603px; left:405px; font-size:17px;"></p>
+
+<button type='button' style="top:600px;left:950px;" class='text' onclick="location.href='theory.html';">Theory</button>
+<button type='button' style="top:650px;left:950px;" class='text' onclick="location.href='index.html';">Page 1</button>
+
+<!--Guiding System-->
+<div class="guide">
+	Instructions
+</div>
+<div class="guideModal">
+	<div class="guideTest"></div>
+
+	<div class="modalContent">
+		<p id="modal_0">
+			The following simulation aims to help picture the effect of the parallel axis theorem,
+			where shapes are treated as laminar. The black circle in the center
+			shape is the axis of rotation in the z direction.
+			<br> <br> <br>
+			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+			<input id="nextButton0" type="button" value="Next">
+		</p>
+		<p id="modal_1" hidden>
+			Drag the axis of rotation to any desired distance from the center of mass.
+			The dotted circle represents the path of the shapes were they to rotate about
+			the axis.
+			<br> <br> <br>
+			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+			<input id="backButton1" type="button" value="Back">
+			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+			<input id="nextButton1" type="button" value="Next">
+
+		</p>
+		<p id="modal_2" hidden>
+			You can also change shapes and their parameters below and see the effect of that on
+			the inertia about the center of mass and about the chosen parallel axis instantaneously
+			displayed. Have fun!
+			<br><br><br>
+			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+			<input id="backButton2" type="button" value="Back">
+				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+			<input id="nextButton2" type="button" value="Next">
+		</p>
+	</div>
+</div>
+
+
+<h5 class='text' style='top:150px; left:50px;'><u>Parallel Axis Theorem</u></h5>
+<script src="guidance.js"></script>
+<link rel="stylesheet" href="style.css">
+<script src="libraries/p5.js"></script>
+<script src="libraries/p5.dom.js"></script>
+<script src="libraries/p5.sound.js"></script>
+<script src="sketch2.js"></script>
+<!--<script src="guidance2.js"></script> -->
+</body>
+</html>
