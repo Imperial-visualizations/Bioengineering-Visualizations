@@ -11,10 +11,10 @@ NEEDS:
 - MathJax
 - Plotly
 - navigator.js (required to switch to second page)
-- all css stylesheets requiered for the Imperial Visualization page consistency
+- all css stylesheets required for the Imperial Visualization page consistency
 
 
-This visualization allows the user to interract with infinitely long current-carrying wires on a screen,
+This visualization allows the user to interact with infinitely long current-carrying wires on a screen,
 in relationship with a circuit drawn on the screen
 Several factors are modifiable, with the help of buttons and sliders.
 It is also an animated visualization.
@@ -54,11 +54,12 @@ int(B.dl) = mu_0 sum(I)
 -->
     <link rel="stylesheet" href="css/skeleton.css">
     <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="Guidance.css">
 
 </head>
 
 <body>
-< class="container">
+<div class="container">
     <div id ='buttons-holder' class="three columns" style="position:absolute; left:0; top:15vh;">
         <button id="buttonReset" >Reset</button>
         <button id="buttonPlay" type="button">Play</button>
@@ -113,12 +114,60 @@ int(B.dl) = mu_0 sum(I)
     </div>
 </div>
 
+<!-- Guiding System for animation-->
+<div class="guide">
+    Instructions
+</div>
+<div class="guideModal">
+    <div class="guideTest"></div>
 
-<!-- my own script-->
-    <script src="1Ampere's-law-copy2.js"></script>
-<!--
-    <script src="1Ampere's-law-main.js"></script>
--->
+    <div class="modalContent">
+        <p id="modal_0">
+            This simulation is aimed at providing a visual and interactive insight of Ampere's law.<br>
+            You will see a closed loop around which <b>B</b> (magnetic field) is integrated.
+            <br> <br> <br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <input id="nextButton0" type="button" value="Next">
+        </p>
+        <p id="modal_1" hidden>
+             The magnetic field is represented by the green arrow, the small incremental path element is the small purple arrow. As you integrate along the path, the arrows will move.<br>
+            To launch the animation, press "play".
+            <br> <br> <br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <input id="backButton1" type="button" value="Back">
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <input id="nextButton1" type="button" value="Next">
+
+        </p>
+        <p id="modal_2" hidden>
+            A graph of the value of <b>B.dl</b> is shown. The mean value of B.dl is indicated by a blue dotted line.<br>
+            You will also find the value of the integral of B.dl around the loop (equivalent to the area under the curve).
+            <br><br><br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <input id="backButton2" type="button" value="Back">
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <input id="nextButton2" type="button" value="Next">
+        </p>
+        <p id="modal_3" hidden>
+            Settings are modifiable. You can add new infinitely long wires of current, change the value of current for each of them, visualize the magnetic field for a single wire of current.<br>
+            You can also change to other loop types (although less exact)
+            Enjoy!
+            <br><br><br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <input id="backButton3" type="button" value="Back">
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <input id="nextButton3" type="button" value="Next">
+        </p>
+    </div>
+</div>
+<!--End of Guiding system-->
+
+<!--Guidance-->
+    <script src="Guidance.js"></script>
+    <!-- my own script-->
+    <script src="1Ampere's-law.js"></script>
+
 <!--what they asked us to add for navigation -->
     <script>
         let pages= ["1Ampere's-law.html", "2Examples-Ampere.html"];
