@@ -116,9 +116,8 @@ function init() {
 }
 
 function main() {
-
    init();
-   initGuidance(["question1"]);
+   initGuidance(["Guidance"]);
    return 0;
 }
 
